@@ -297,12 +297,51 @@ print_header "Hardware Configuration"
 TARGET_HW="./hardware-configuration.nix"
 
 if [ -f /etc/nixos/hardware-configuration.nix ]; then
-  echo -e "${GREEN}Copying /etc/nixos/hardware-configuration.nix into this repo${NC}"
-  sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
+  echo -e "${GREEN}Found existing /etc/nixos/hardware-configuration.nix${NC}"
+  if [ $NONINTERACTIVE -eq 1 ]; then
+    echo -e "Non-interactive: using existing hardware-configuration.nix"
+    sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
+  else
+    read -p "Use existing /etc/nixos/hardware-configuration.nix? (Y=use existing, N=generate new) [Y]: " -n 1 -r
+    echo
+    if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "${GREEN}Copying existing hardware-configuration.nix into this repo${NC}"
+      sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
+    else
+      echo -e "${YELLOW}Generating a new hardware-configuration.nix with: sudo nixos-generate-config --root /${NC}"
+      sudo nixos-generate-config --root /
+      if [ -f /etc/nixos/hardware-configuration.nix ]; then
+        echo -e "${GREEN}Copying newly generated hardware-configuration.nix into this repo${NC}"
+        sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
+      else
+        print_error "hardware-configuration.nix still not found after generation."
+        exit 1
+      fi
+    fi
+  fi
 else
-  print_error "/etc/nixos/hardware-configuration.nix not found."
-  echo -e "Please generate it with: nixos-generate-config --root /"
-  exit 1
+  echo -e "${YELLOW}/etc/nixos/hardware-configuration.nix not found.${NC}"
+  if [ $NONINTERACTIVE -eq 1 ]; then
+    echo -e "Non-interactive: generating hardware config with: sudo nixos-generate-config --root /"
+    sudo nixos-generate-config --root /
+  else
+    read -p "Generate a new hardware-configuration.nix with 'sudo nixos-generate-config --root /'? (Y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      print_error "Cannot continue without a hardware-configuration.nix"
+      echo -e "Please run: sudo nixos-generate-config --root /"
+      exit 1
+    fi
+    sudo nixos-generate-config --root /
+  fi
+
+  if [ -f /etc/nixos/hardware-configuration.nix ]; then
+    echo -e "${GREEN}Copying newly generated /etc/nixos/hardware-configuration.nix into this repo${NC}"
+    sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
+  else
+    print_error "hardware-configuration.nix still not found after generation attempt."
+    exit 1
+  fi
 fi
 
 print_header "Pre-build Verification"
