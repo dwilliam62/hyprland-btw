@@ -82,11 +82,79 @@ if ! command -v git &>/dev/null; then
   exit 1
 fi
 
+if ! command -v lspci &>/dev/null; then
+  print_error "pciutils (lspci) is not installed."
+  echo -e "Please install pciutils, then re-run the install script."
+  echo -e "Example: nix-shell -p pciutils"
+  exit 1
+fi
+
 if [ -n "$(grep -i nixos </etc/os-release || true)" ]; then
   echo -e "${GREEN}Verified this is NixOS.${NC}"
 else
   print_error "This is not NixOS or the distribution information is not available."
   exit 1
+fi
+
+# GPU profile detection (VM / amd / intel / nvidia), adapted from ddubsOS.
+GPU_PROFILE=""
+has_nvidia=false
+has_intel=false
+has_amd=false
+has_vm=false
+
+if lspci | grep -qi 'vga\|3d'; then
+  while read -r line; do
+    if   echo "$line" | grep -qi 'nvidia'; then
+      has_nvidia=true
+    elif echo "$line" | grep -qi 'amd'; then
+      has_amd=true
+    elif echo "$line" | grep -qi 'intel'; then
+      has_intel=true
+    elif echo "$line" | grep -qi 'virtio\|vmware'; then
+      has_vm=true
+    fi
+  done < <(lspci | grep -i 'vga\|3d')
+
+  if   $has_vm; then
+    GPU_PROFILE="vm"
+  elif $has_nvidia && $has_intel; then
+    GPU_PROFILE="nvidia"  # treat hybrid laptop as primary NVIDIA for this simple setup
+  elif $has_nvidia; then
+    GPU_PROFILE="nvidia"
+  elif $has_amd; then
+    GPU_PROFILE="amd"
+  elif $has_intel; then
+    GPU_PROFILE="intel"
+  fi
+fi
+
+if [ -n "$GPU_PROFILE" ]; then
+  echo -e "${GREEN}Detected GPU profile: $GPU_PROFILE${NC}"
+  if [ $NONINTERACTIVE -eq 1 ]; then
+    echo -e "Non-interactive: accepting detected GPU profile"
+  else
+    read -p "Is this GPU profile correct? (Y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "${YELLOW}GPU profile not confirmed. Falling back to manual selection.${NC}"
+      GPU_PROFILE=""
+    fi
+  fi
+fi
+
+if [ -z "$GPU_PROFILE" ]; then
+  if [ $NONINTERACTIVE -eq 1 ]; then
+    GPU_PROFILE="vm"
+    echo -e "Non-interactive: defaulting GPU profile to $GPU_PROFILE"
+  else
+    echo -e "${YELLOW}Automatic GPU detection failed or no specific profile found.${NC}"
+    echo -e "Available GPU profiles: amd | intel | nvidia | vm"
+    read -rp "Enter GPU profile [ vm ]: " GPU_PROFILE
+    if [ -z "$GPU_PROFILE" ]; then
+      GPU_PROFILE="vm"
+    fi
+  fi
 fi
 
 print_header "Using existing tony-nixos repository"
@@ -177,8 +245,9 @@ echo -e "${GREEN}Selected hostname: $hostName${NC}"
 echo -e "${GREEN}Selected username: $userName${NC}"
 echo -e "${GREEN}Selected keyboard layout: $keyboardLayout${NC}"
 echo -e "${GREEN}Selected console keymap: $consoleKeyMap${NC}"
+echo -e "${GREEN}Selected GPU profile: $GPU_PROFILE${NC}"
 
-# Patch configuration.nix with chosen timezone, hostname, username, and layouts.
+# Patch configuration.nix with chosen timezone, hostname, username, layouts, and VM profile.
 sed -i "s|time.timeZone = \".*\";|time.timeZone = \"$timeZone\";|" ./configuration.nix
 sed -i "s|networking.hostName = \".*\";|networking.hostName = \"$hostName\";|" ./configuration.nix
 # Update the primary user attribute from users.users.dwilliams to the chosen username.
@@ -186,6 +255,37 @@ sed -i "s|users.users\\.dwilliams = {|users.users.\"$userName\" = { |" ./configu
 # Update console keymap and XKB layout.
 sed -i "s|console.keyMap = \".*\";|console.keyMap = \"$consoleKeyMap\";|" ./configuration.nix
 sed -i "s|xserver.xkb.layout = \".*\";|xserver.xkb.layout = \"$keyboardLayout\";|" ./configuration.nix
+# Toggle VM guest services based on GPU profile.
+if [ "$GPU_PROFILE" = "vm" ]; then
+  sed -i "s|vm.guest-services.enable = .*;|vm.guest-services.enable = true;|" ./configuration.nix
+else
+  sed -i "s|vm.guest-services.enable = .*;|vm.guest-services.enable = false;|" ./configuration.nix
+fi
+
+# Enable the matching GPU driver module and disable the others.
+case "$GPU_PROFILE" in
+  amd)
+    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = true;|" ./configuration.nix
+    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = false;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = false;|" ./configuration.nix
+    ;;
+  intel)
+    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
+    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = true;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = false;|" ./configuration.nix
+    ;;
+  nvidia)
+    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
+    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = false;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = true;|" ./configuration.nix
+    ;;
+  vm|*)
+    # VM / unknown: leave all hardware drivers disabled; virtio/VM driver is used.
+    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
+    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = false;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = false;|" ./configuration.nix
+    ;;
+esac
 
 # Update flake.nix and home.nix to avoid hardcoded username.
 sed -i "s|users.dwilliams = import ./home.nix;|users.$userName = import ./home.nix;|" ./flake.nix
