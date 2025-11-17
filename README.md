@@ -37,7 +37,12 @@
 
 ![Waybar htop](config/images/ScreenShot-htop-waybar.png)
 
-### `Flake.nix`
+## Nix configuration files
+
+Below you can expand each Nix file to view its full contents.
+
+<details>
+<summary><code>flake.nix</code> – Flake entrypoint</summary>
 
 ```nix
 {
@@ -75,13 +80,14 @@
     };
   };
 }
-
 ```
 
-### `configuration.nix`
+</details>
+
+<details>
+<summary><code>configuration.nix</code> – System configuration</summary>
 
 ```nix
-
 { config, lib, pkgs, ... }:
 
 {
@@ -108,7 +114,7 @@
 
   time.timeZone = "America/New_York";
 
-  # Add services
+  # Add services 
   services = {
     # Disable TTY autologin; use a display manager (ly) instead.
     getty.autologinUser = null;
@@ -159,7 +165,7 @@
 
   environment.systemPackages = with pkgs; [
 
-    ## Hyprland specific
+    ## Hyprland specific 
     hyprpaper
     hyprshot
     hypridle
@@ -169,8 +175,8 @@
     xdg-desktop-portal-hyprland
 
 
-    # Hyprland Related
-    app2unit # launcher
+    # Hyprland Related 
+    app2unit # launcher 
     clipman
     cliphist
     grim
@@ -182,8 +188,6 @@
     waybar
     matugen
 
-
-   #  Add your programs here
 
     atop
     bat
@@ -219,7 +223,6 @@
     zig
     zoxide
   ];
-
   fonts = {
     packages = with pkgs; [
       dejavu_fonts
@@ -255,13 +258,14 @@
   system.stateVersion = "25.11"; # Did you read the comment?
 
 }
-
 ```
 
-### `home.nix`
+</details>
+
+<details>
+<summary><code>home.nix</code> – Home Manager configuration</summary>
 
 ```nix
-
 { config, pkgs, inputs, ... }:
 
 {
@@ -329,3 +333,42 @@
   home.file.".config/starship.toml".source = ./config/starship.toml;
 }
 ```
+
+</details>
+
+## Hyprland keybinds
+
+Default keybinds from <code>config/hypr/hyprland.conf</code> (with <code>$mainMod = SUPER</code>):
+
+| Keys / Modifiers                | Action                  | Description                                                                                  |
+|---------------------------------|-------------------------|----------------------------------------------------------------------------------------------|
+| SUPER + Return                  | exec <code>$terminal</code> (foot) | Open terminal (foot)                                                                        |
+| SUPER + SHIFT + Return         | exec kitty              | Open Kitty terminal                                                                          |
+| SUPER + Q                       | killactive              | Close focused window                                                                         |
+| SUPER + SHIFT + Q              | exit                    | Exit Hyprland session                                                                        |
+| SUPER + T                       | exec <code>$fileManager</code> (thunar) | Launch Thunar file manager                                                 |
+| SUPER + Space                   | togglefloating          | Toggle floating for focused window                                                           |
+| SUPER + F                       | fullscreen,1            | Toggle global fullscreen mode                                                                |
+| SUPER + SHIFT + F              | fullscreen              | Toggle regular fullscreen                                                                    |
+| SUPER + R                       | exec <code>$menu</code> (wofi --show drun) | Application launcher                                                          |
+| SUPER + S                       | exec <code>$snip</code> (snip) | Snipping / screenshot tool                                                         |
+| ALT + SHIFT + S                | exec hyprshot…          | Region screenshot to <code>~/Pictures/Screenshots</code>                                    |
+| SUPER + D                       | exec qs … launcher      | Toggle Noctalia launcher                                                                     |
+| SUPER + M                       | exec qs … notifications | Toggle Noctalia notifications                                                                |
+| SUPER + V                       | exec qs … clipboard     | Open Noctalia clipboard launcher                                                             |
+| SUPER + SHIFT + ,              | exec qs … settings      | Toggle Noctalia settings                                                                     |
+| SUPER + ALT + L                | exec qs … lockAndSuspend | Lock and suspend                                                                            |
+| SUPER + SHIFT + Y              | exec qs … wallpaper     | Toggle wallpaper module                                                                      |
+| SUPER + X                       | exec qs … sessionMenu   | Toggle session menu                                                                          |
+| SUPER + C                       | exec qs … controlCenter | Toggle control center                                                                       |
+| SUPER + CTRL + R               | exec qs … screenRecorder | Toggle screen recorder                                                                      |
+| SUPER + L                       | movefocus l             | Move focus left                                                                              |
+| SUPER + H                       | movefocus r             | Move focus right                                                                             |
+| SUPER + K                       | movefocus u             | Move focus up                                                                                |
+| SUPER + J                       | movefocus d             | Move focus down                                                                              |
+| SUPER + 1–0                     | workspace 1–10          | Switch to workspace 1–10                                                                     |
+| SUPER + SHIFT + 1–0            | movetoworkspace 1–10    | Move focused window to workspace 1–10                                                       |
+| SUPER + mouse scroll down      | workspace e+1           | Go to next workspace                                                                         |
+| SUPER + mouse scroll up        | workspace e-1           | Go to previous workspace                                                                     |
+| SUPER + mouse:272 (drag left)  | movewindow              | Drag to move window                                                                          |
+| SUPER + mouse:273 (drag right) | resizewindow            | Drag to resize window                                                                        |
