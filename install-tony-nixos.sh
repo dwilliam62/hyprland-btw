@@ -179,7 +179,20 @@ echo -e "${GREEN}Selected keyboard layout: $keyboardLayout${NC}"
 echo -e "${GREEN}Selected console keymap: $consoleKeyMap${NC}"
 
 # Patch configuration.nix with chosen timezone, hostname, username, and layouts.
-sed -i 's|time.timeZone = ".*";|time.timeZone = "'
+sed -i "s|time.timeZone = \".*\";|time.timeZone = \"$timeZone\";|" ./configuration.nix
+sed -i "s|networking.hostName = \".*\";|networking.hostName = \"$hostName\";|" ./configuration.nix
+# Update the primary user attribute from users.users.dwilliams to the chosen username.
+sed -i "s|users.users\\.dwilliams = {|users.users.\"$userName\" = { |" ./configuration.nix
+# Update console keymap and XKB layout.
+sed -i "s|console.keyMap = \".*\";|console.keyMap = \"$consoleKeyMap\";|" ./configuration.nix
+sed -i "s|xserver.xkb.layout = \".*\";|xserver.xkb.layout = \"$keyboardLayout\";|" ./configuration.nix
+
+# Update flake.nix and home.nix to avoid hardcoded username.
+sed -i "s|users.dwilliams = import ./home.nix;|users.$userName = import ./home.nix;|" ./flake.nix
+sed -i "s|home.username = \"dwilliams\";|home.username = \"$userName\";|" ./home.nix
+sed -i "s|home.homeDirectory = \"/home/dwilliams\";|home.homeDirectory = \"/home/$userName\";|" ./home.nix
+
+print_header "Hardware Configuration"
 
 TARGET_HW="./hardware-configuration.nix"
 
