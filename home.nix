@@ -6,7 +6,7 @@
   home.stateVersion = "25.11";
 
   home.sessionVariables = {
-    GTK_THEME = "adw-gtk3-dark";
+    GTK_THEME = "Adwaita:dark";
   };
 
   programs = {
@@ -32,7 +32,7 @@
       profileExtra = ''
         if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
           #exec uwsm start -S hyprland-uwsm.desktop
-          export GTK_THEME=adw-gtk3-dark
+          export GTK_THEME=Adwaita:dark
           exec Hyprland
         fi
       '';
