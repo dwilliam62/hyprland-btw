@@ -11,12 +11,14 @@ https://www.youtube.com/watch?v=7QLhCgDMqgw&t=138s
 - Autoloin
 - Simple flake
 - Simple Home Manager
-- Simple waybar
+- noctalis shell
+- Simple waybar as alternative
+- NeoVIM configured by nixvim
+- Tony,BTWs TMUX configuration
 
 ### `Flake.nix`
 
 ```nix
-}
 {
   description = "Hyprland on Nixos";
 
@@ -26,9 +28,14 @@ https://www.youtube.com/watch?v=7QLhCgDMqgw&t=138s
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixvim.url = "github:nix-community/nixvim";
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, nixvim, noctalia, ... }: {
     nixosConfigurations.hyprland-btw = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
@@ -40,6 +47,7 @@ https://www.youtube.com/watch?v=7QLhCgDMqgw&t=138s
             useUserPackages = true;
             users.dwilliams = import ./home.nix;
             backupFileExtension = "backup";
+            extraSpecialArgs = { inherit inputs; };
           };
         }
       ];
@@ -48,24 +56,30 @@ https://www.youtube.com/watch?v=7QLhCgDMqgw&t=138s
 }
 ```
 
-### `home.nix`
+## `home.nix`
 
 ```nix
 
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
-  home.username = "dwilliams";
-  home.homeDirectory = "/home/dwilliams";
-  home.stateVersion = "25.11";
-
-  home.sessionVariables = {
-    GTK_THEME = "Adwaita:dark";
+  imports = [
+    ./config/nixvim.nix # your Nixvim HM module
+    inputs.noctalia.homeModules.default # Noctalia’s Home Manager module
+  ];
+  home = {
+    username = "dwilliams";
+    homeDirectory = "/home/dwilliams";
+    stateVersion = "25.11";
+    sessionVariables = {
+      # Making sure dark theme is set
+      GTK_THEME = "Adwaita:dark";
+    };
   };
 
   programs = {
     neovim = {
-      enable = true;
+      enable = false; # Now managed by nixvim.nix
       defaultEditor = true;
     };
     bash = {
@@ -85,15 +99,14 @@ https://www.youtube.com/watch?v=7QLhCgDMqgw&t=138s
       '';
       profileExtra = ''
         if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-          #exec uwsm start -S hyprland-uwsm.desktop   #uwsm stopped working for me after nix update
-          export GTK_THEME=Adwaita:dark   # Setting this here and in `hyprland.conf`
+          #exec uwsm start -S hyprland-uwsm.desktop
+          export GTK_THEME=Adwaita:dark
           exec Hyprland
         fi
       '';
     };
   };
 
-  # Had to set theme in `hyprland.conf` also or everything was light
   gtk = {
     enable = true;
     gtk3.extraConfig = {
@@ -113,8 +126,11 @@ https://www.youtube.com/watch?v=7QLhCgDMqgw&t=138s
   home.file.".bashrc-personal".source = ./config/.bashrc-personal;
   home.file.".config/tmux/tmux.conf".source = ./config/tmux.conf;
   home.file.".config/starship.toml".source = ./config/starship.toml;
- }
+}
+
 ```
+
+## `configuration.nix`
 
 ```nix
 
@@ -136,136 +152,142 @@ https://www.youtube.com/watch?v=7QLhCgDMqgw&t=138s
     networkmanager.enable = true;
   };
 
-   time.timeZone = "America/New_York";
+  time.timeZone = "America/New_York";
 
-   # Add services
-   services = {
-     getty.autologinUser = "dwilliams";
-     openssh.enable = true;
-     libinput.enable = true;
-     pipewire = {
-       enable = true;
-       pulse.enable = true;
-     };
-   };
+  # Add services
+  services = {
+    getty.autologinUser = "dwilliams";
+    openssh.enable = true;
+    tumbler.enable = true;
+    envfs.enable = true;
+    libinput.enable = true;
+    pipewire = {
+      enable = true;
+      pulse.enable = true;
+    };
+  };
 
-   programs = {
-     hyprland = {
+  programs = {
+    hyprland = {
       enable = true;
       xwayland.enable = true;
-      withUWSM = false;    # Stopped woirkoing after update
-     };
+      withUWSM = false;
+    };
     firefox.enable = true;
     thunar.enable = true;
     mtr.enable = true;
     gnupg.agent = {
-     enable = true;
-     enableSSHSupport = true;
+      enable = true;
+      enableSSHSupport = true;
     };
-   };
+  };
 
   # Select internationalisation properties.
-   i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
+
+
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-   users.users.dwilliams = {
-     isNormalUser = true;
-     extraGroups = [ "wheel" "input" ]; # Enable ‘sudo’ for the user.
-     packages = with pkgs; [
-       tree
-     ];
-   };
+  users.users.dwilliams = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "input" ]; # Enable ‘sudo’ for the user.
+    packages = with pkgs; [
+      tree
+    ];
+  };
 
-   environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
 
     ## Hyprland specific
-     hyprpaper
-     hyprshot
-     hypridle
-     hyprlock
-     hyprpicker
-     xdg-desktop-portal-hyprland
+    hyprpaper
+    hyprshot
+    hypridle
+    hyprlock
+    hyprpicker
+    libnotify # send alerts
+    xdg-desktop-portal-hyprland
 
 
-     # Hyprland Related
-     clipman
-     grim
-     slurp
-     nwg-look
-     nwg-dock-hyprland
-     nwg-menu
-     nwg-panel
-     nwg-launchers
-     rofi
-     wofi
-     waybar
-     waypaper
+    # Hyprland Related
+    quickshell
+    clipman
+    grim
+    slurp
+    nwg-look
+    nwg-dock-hyprland
+    nwg-menu
+    nwg-panel
+    nwg-launchers
+    rofi
+    wofi
+    waybar
+    waypaper
+    matugen
+
+    atop
+    bat
+    btop
+    clang
+    curl
+    eza
+    fastfetch
+    foot
+    git
+    gcc
+    git
+    gping
+    google-chrome
+    hyfetch
+    kitty
+    lunarvim
+    luarocks
+    ncdu
+    nh
+    onefetch
+    pciutils
+    ripgrep
+    starship
+    tmux
+    ugrep
+    vim
+    wget
+    yazi
+    zig
+    zoxide
+  ];
+  fonts = {
+    packages = with pkgs; [
+      dejavu_fonts
+      fira-code
+      fira-code-symbols
+      font-awesome
+      hackgen-nf-font
+      ibm-plex
+      inter
+      jetbrains-mono
+      material-icons
+      maple-mono.NF
+      minecraftia
+      nerd-fonts.im-writing
+      nerd-fonts.blex-mono
+      noto-fonts
+      noto-fonts-color-emoji
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+      noto-fonts-monochrome-emoji
+      powerline-fonts
+      roboto
+      roboto-mono
+      symbola
+      terminus_font
+    ];
+  };
 
 
-     atop
-     bat
-     btop
-     clang
-     curl
-     eza
-     fastfetch
-     foot
-     git
-     gcc
-     git
-     gping
-     google-chrome
-     hyfetch
-     kitty
-     lunarvim
-     luarocks
-     ncdu
-     nh
-     onefetch
-     pciutils
-     ripgrep
-     starship
-     tmux
-     ugrep
-     vim
-     wget
-     yazi
-     zig
-     zoxide
-   ];
-        fonts = {
-            packages = with pkgs; [
-              dejavu_fonts
-              fira-code
-              fira-code-symbols
-              font-awesome
-              hackgen-nf-font
-              ibm-plex
-              inter
-              jetbrains-mono
-              material-icons
-              maple-mono.NF
-              minecraftia
-              nerd-fonts.im-writing
-              nerd-fonts.blex-mono
-              noto-fonts
-              noto-fonts-color-emoji
-              noto-fonts-cjk-sans
-              noto-fonts-cjk-serif
-              noto-fonts-monochrome-emoji
-              powerline-fonts
-              roboto
-              roboto-mono
-              symbola
-              terminus_font
-            ];
-          };
-
-
-   nixpkgs.config.allowUnfree = true;
-   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-   security.sudo.wheelNeedsPassword = false;
-   system.stateVersion = "25.11"; # Did you read the comment?
+  nixpkgs.config.allowUnfree = true;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  security.sudo.wheelNeedsPassword = true;
+  system.stateVersion = "25.11"; # Did you read the comment?
 
 }
 
