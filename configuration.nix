@@ -26,13 +26,12 @@
 
   time.timeZone = "America/New_York";
 
+  # Enable VM guest services via the drivers module when running in a VM.
+  # Disable this if you are installing on bare metal without QEMU/Spice.
+  vm.guest-services.enable = true;
+
   # Add services 
   services = {
-    # Enabled VM guest services
-    qemuGuest.enable = true;
-    spice-vdagentd.enable = true;
-    spice-webdavd.enable = true;
-    spice-autorandr.enable = true;
     getty.autologinUser = null; # disable auto-login
     openssh.enable = true;
     tumbler.enable = true;

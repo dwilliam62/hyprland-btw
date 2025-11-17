@@ -19,6 +19,7 @@
       system = "x86_64-linux";
       modules = [
         ./configuration.nix
+        ./modules/drivers/default.nix
         home-manager.nixosModules.home-manager
         {
           home-manager = {
