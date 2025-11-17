@@ -169,6 +169,7 @@
   systemd.services.flatpak-add-flathub = {
     description = "Add Flathub Flatpak remote";
     wantedBy = [ "multi-user.target" ];
+    wants = [ "network-online.target" ];
     after = [ "network-online.target" "flatpak-system-helper.service" ];
     serviceConfig = {
       Type = "oneshot";
