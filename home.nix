@@ -34,6 +34,7 @@
  };
     home.file.".config/hypr".source = ./config/hypr;
     home.file.".config/waybar".source = ./config/waybar;
+    home.file.".config/fastfetch".source = ./config/fastfetch;
     home.file.".config/foot".source = ./config/foot;
     home.file.".bashrc-personal".source = ./config/.bashrc-personal;
     home.file.".config/starship.toml".source = ./config/starship.toml;
