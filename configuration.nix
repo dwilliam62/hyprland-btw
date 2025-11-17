@@ -88,6 +88,17 @@
     ];
   };
 
+  # Example: add additional users (uncomment and adjust as needed)
+  # users.users."seconduser" = {
+  #   isNormalUser = true;
+  #   extraGroups = [ "wheel" ];
+  #   shell = pkgs.zsh;
+  #   packages = with pkgs; [
+  #     git
+  #     htop
+  #   ];
+  # };
+
   systemd.services.flatpak-add-flathub = {
     description = "Add Flathub Flatpak remote";
     wantedBy = [ "multi-user.target" ];
