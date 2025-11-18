@@ -127,7 +127,7 @@ Below you can expand each Nix file to view its full contents.
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.dwilliams = import ./home.nix;
+            users."your-username" = import ./home.nix;
             backupFileExtension = "backup";
             extraSpecialArgs = { inherit inputs; };
           };
@@ -211,7 +211,7 @@ Below you can expand each Nix file to view its full contents.
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.dwilliams = {
+  users.users."your-username" = {
     isNormalUser = true;
     extraGroups = [ "wheel" "input" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
@@ -241,8 +241,8 @@ Below you can expand each Nix file to view its full contents.
     ./config/noctalia.nix # Noctalia QuickShell wiring (like ddubsos)
   ];
   home = {
-    username = "dwilliams";
-    homeDirectory = "/home/dwilliams";
+    username = "your-username";
+    homeDirectory = "/home/your-username";
     stateVersion = "25.11";
     sessionVariables = {
       GTK_THEME = "Adwaita:dark";
@@ -465,7 +465,7 @@ hyprland-btw/
 ├── flake.nix                     # Flake entrypoint; defines inputs and hyprland-btw system
 ├── configuration.nix             # Top-level NixOS system configuration
 ├── hardware-configuration.nix    # Hardware/disk layout for this machine (auto-generated)
-├── home.nix                      # Home Manager configuration for user dwilliams
+├── home.nix                      # Home Manager configuration for user your-username
 ├── LICENSE                       # Project license
 ├── README.md                     # Project overview and documentation
 └── config/                       # User-level and modular configuration

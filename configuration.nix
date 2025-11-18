@@ -84,7 +84,7 @@
   console.keyMap = "us";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.dwilliams = {
+  users.users."your-username" = {
     isNormalUser = true;
     extraGroups = [ "wheel" "input" ]; # Enable ‘sudo’ for the user.
     shell = pkgs.zsh; # default login shell

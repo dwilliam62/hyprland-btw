@@ -25,7 +25,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.dwilliams = import ./home.nix;
+            users."your-username" = import ./home.nix;
             backupFileExtension = "backup";
             extraSpecialArgs = { inherit inputs; };
           };
