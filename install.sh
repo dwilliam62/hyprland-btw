@@ -295,53 +295,88 @@ sed -i "s|home.homeDirectory = lib.mkDefault \"/home/your-username\";|home.homeD
 print_header "Hardware Configuration"
 
 TARGET_HW="./hardware-configuration.nix"
+OWNER_USER="${SUDO_USER:-${USER:-$(whoami)}}"
 
-if [ -f /etc/nixos/hardware-configuration.nix ]; then
-  echo -e "${GREEN}Found existing /etc/nixos/hardware-configuration.nix${NC}"
-  if [ $NONINTERACTIVE -eq 1 ]; then
-    echo -e "Non-interactive: using existing hardware-configuration.nix"
-    sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
-  else
-    read -p "Use existing /etc/nixos/hardware-configuration.nix? (Y=use existing, N=generate new) [Y]: " -n 1 -r
-    echo
-    if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
-      echo -e "${GREEN}Copying existing hardware-configuration.nix into this repo${NC}"
-      sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
+backup_if_exists() {
+  if [ -f "$TARGET_HW" ]; then
+    local ts
+    ts="$(date +%s)"
+    mv "$TARGET_HW" "${TARGET_HW}.backup.${ts}"
+    echo -e "${YELLOW}Backed up existing hardware-configuration.nix to ${TARGET_HW}.backup.${ts}${NC}"
+  fi
+}
+
+copy_from() {
+  local src="$1"
+  backup_if_exists
+  cp "$src" "$TARGET_HW"
+  chown "$OWNER_USER":"$OWNER_USER" "$TARGET_HW" 2>/dev/null || true
+  echo -e "${GREEN}Wrote $TARGET_HW from $src${NC}"
+}
+
+write_from_show() {
+  backup_if_exists
+  # Prefer writing as the invoking user so the file is not root-owned.
+  if nixos-generate-config --show-hardware-config > "$TARGET_HW" 2>/dev/null; then
+    chown "$OWNER_USER":"$OWNER_USER" "$TARGET_HW" 2>/dev/null || true
+    echo -e "${GREEN}Wrote $TARGET_HW from nixos-generate-config --show-hardware-config${NC}"
+    return 0
+  fi
+  return 1
+}
+
+ensure_hw_config() {
+  # 1) Prefer existing system file
+  if [ -f /etc/nixos/hardware-configuration.nix ]; then
+    if [ $NONINTERACTIVE -eq 1 ]; then
+      echo -e "Non-interactive: using existing /etc/nixos/hardware-configuration.nix"
+      copy_from /etc/nixos/hardware-configuration.nix
+      return 0
     else
-      echo -e "${YELLOW}Generating a new hardware-configuration.nix with: sudo nixos-generate-config --root /${NC}"
-      sudo nixos-generate-config --root /
-      if [ -f /etc/nixos/hardware-configuration.nix ]; then
-        echo -e "${GREEN}Copying newly generated hardware-configuration.nix into this repo${NC}"
-        sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
-      else
-        print_error "hardware-configuration.nix still not found after generation."
-        exit 1
+      read -p "Use existing /etc/nixos/hardware-configuration.nix? (Y=use existing, N=generate new) [Y]: " -n 1 -r
+      echo
+      if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
+        copy_from /etc/nixos/hardware-configuration.nix
+        return 0
       fi
     fi
-  fi
-else
-  echo -e "${YELLOW}/etc/nixos/hardware-configuration.nix not found.${NC}"
-  if [ $NONINTERACTIVE -eq 1 ]; then
-    echo -e "Non-interactive: generating hardware config with: sudo nixos-generate-config --root /"
-    sudo nixos-generate-config --root /
   else
-    read -p "Generate a new hardware-configuration.nix with 'sudo nixos-generate-config --root /'? (Y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      print_error "Cannot continue without a hardware-configuration.nix"
-      echo -e "Please run: sudo nixos-generate-config --root /"
-      exit 1
-    fi
-    sudo nixos-generate-config --root /
+    echo -e "${YELLOW}/etc/nixos/hardware-configuration.nix not found.${NC}"
   fi
 
-  if [ -f /etc/nixos/hardware-configuration.nix ]; then
-    echo -e "${GREEN}Copying newly generated /etc/nixos/hardware-configuration.nix into this repo${NC}"
-    sudo cp /etc/nixos/hardware-configuration.nix "$TARGET_HW"
-  else
-    print_error "hardware-configuration.nix still not found after generation attempt."
-    exit 1
+  # 2) Try generating directly to repo without touching /etc
+  if write_from_show; then
+    return 0
   fi
+
+  # 3) If inside installer with target mounted at /mnt, try that path
+  if [ -f /mnt/etc/nixos/hardware-configuration.nix ]; then
+    echo -e "${GREEN}Found /mnt/etc/nixos/hardware-configuration.nix${NC}"
+    copy_from /mnt/etc/nixos/hardware-configuration.nix
+    return 0
+  fi
+
+  # 4) As a fallback, generate into / (or /mnt if present) and copy
+  local root="/"
+  if mountpoint -q /mnt 2>/dev/null; then
+    root="/mnt"
+  fi
+  echo -e "${YELLOW}Generating hardware config with: sudo nixos-generate-config --root ${root}${NC}"
+  sudo nixos-generate-config --root "$root"
+  if [ -f "$root/etc/nixos/hardware-configuration.nix" ]; then
+    copy_from "$root/etc/nixos/hardware-configuration.nix"
+    return 0
+  fi
+
+  return 1
+}
+
+if ensure_hw_config; then
+  :
+else
+  print_error "hardware-configuration.nix could not be created."
+  echo -e "Tried: existing /etc, --show-hardware-config, /mnt, and --root fallback."
+  exit 1
 fi
 
 print_header "Pre-build Verification"
