@@ -27,8 +27,8 @@
       shellAliases = {
         ll = "eza -la --group-dirs-first --icons";
         v = "nvim";
-        rebuild = "sudo nixos-rebuild switch --flake ~/tony-nixos/";
-        update = "nix flake update --flake ~/tony-nixos && sudo nixos-rebuild switch --flake ~/tony-nixos/";
+        rebuild = "sudo nixos-rebuild switch --flake ~/hyprland-btw/";
+        update = "nix flake update --flake ~/hyprland-btw && sudo nixos-rebuild switch --flake ~/hyprland-btw/";
       };
       # The block below is for commands that should run every time a terminal starts.
       initExtra = ''

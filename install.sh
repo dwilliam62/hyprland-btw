@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ######################################
-# Install script for tony-nixos Hyprland config
+# Install script for hyprland-btw Hyprland config
 # Author:  Don Williams
 # Ported from ddubsOS installer (simplified for single-host setup)
 #######################################
@@ -31,14 +31,14 @@ print_error() {
 
 print_success_banner() {
   echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${GREEN}║       tony-nixos Hyprland configuration applied successfully!         ║${NC}"
+  echo -e "${GREEN}║       hyprland-btw Hyprland configuration applied successfully!       ║${NC}"
   echo -e "${GREEN}║   Please reboot your system for changes to take full effect.          ║${NC}"
   echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════════════╝${NC}"
 }
 
 print_failure_banner() {
   echo -e "${RED}╔═══════════════════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${RED}║         tony-nixos installation failed during nixos-rebuild.          ║${NC}"
+  echo -e "${RED}║         hyprland-btw installation failed during nixos-rebuild.        ║${NC}"
   echo -e "${RED}║   Please review the log file for details:                             ║${NC}"
   echo -e "${RED}║   ${LOG_FILE}                                                        ║${NC}"
   echo -e "${RED}╚═══════════════════════════════════════════════════════════════════════╝${NC}"
@@ -157,7 +157,7 @@ if [ -z "$GPU_PROFILE" ]; then
   fi
 fi
 
-print_header "Using existing tony-nixos repository"
+print_header "Using existing hyprland-btw repository"
 
 cd "$SCRIPT_DIR" || exit 1
 echo -e "${GREEN}Current directory: $(pwd)${NC}"
@@ -369,9 +369,9 @@ if sudo nixos-rebuild boot --flake .#hyprland-btw --option accept-flake-config t
   print_success_banner
   echo ""
   if [ $NONINTERACTIVE -eq 1 ]; then
-    echo "Non-interactive: please reboot your system to start using tony-nixos."
+    echo "Non-interactive: please reboot your system to start using hyprland-btw."
   else
-    read -p "Reboot now to start using tony-nixos? (Y/N): " -n 1 -r
+    read -p "Reboot now to start using hyprland-btw? (Y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo "Rebooting..."
