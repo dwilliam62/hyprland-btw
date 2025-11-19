@@ -401,7 +401,7 @@ if [ "$userName" != "$CURRENT_DECLARED_USER" ]; then
       BEGIN{added=0}
       {
         print $0
-        if(!added && $0 ~ /users\.users\.[\"]([^\"]+)[\"]\s*=\s*\{/){
+        if(!added && $0 ~ /users\.users\."([^"]+)"\s*=\s*\{/){
           # Wait until we hit the closing brace of that block
           inblk=1
         }
