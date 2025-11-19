@@ -240,6 +240,53 @@ else
   fi
 fi
 
+print_header "User and Root Password Checks"
+
+# 1) Validate whether the entered username exists locally; if not, inform the user
+#    that NixOS will create it on switch since configuration.nix defines it.
+if getent passwd "$userName" >/dev/null 2>&1; then
+  echo -e "${GREEN}User '$userName' exists on this system.${NC}"
+else
+  echo -e "${YELLOW}User '$userName' does not currently exist on this system.${NC}"
+  echo -e "${YELLOW}It will be created during nixos-rebuild because users.users.\"$userName\" is defined.${NC}"
+  if [ $NONINTERACTIVE -eq 1 ]; then
+    echo -e "Non-interactive: proceeding with automatic creation."
+  else
+    read -p "Proceed with creating '$userName' on switch? (Y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      print_error "Aborting at user confirmation."
+      exit 1
+    fi
+  fi
+fi
+
+# 2) Check if root has a usable password; if not, offer to set it now.
+#    Root is considered unset/locked if the shadow field is empty or starts with '!' or '*'.
+ROOT_FIELD=$(sudo awk -F: '$1=="root"{print $2}' /etc/shadow 2>/dev/null || true)
+if [[ -z "$ROOT_FIELD" || "$ROOT_FIELD" == '!'* || "$ROOT_FIELD" == '*'* ]]; then
+  echo -e "${YELLOW}Root password appears unset or locked.${NC}"
+  if [ $NONINTERACTIVE -eq 1 ]; then
+    echo -e "Non-interactive: skipping root password configuration. Use 'sudo passwd root' later."
+  else
+    read -p "Set the root password now? (Y/N): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "You will be prompted to enter a new password for root."
+      if ! sudo passwd root; then
+        print_error "Failed to set root password."
+        read -p "Continue anyway? (Y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+          exit 1
+        fi
+      fi
+    fi
+  fi
+else
+  echo -e "${GREEN}Root password appears to be set.${NC}"
+fi
+
 echo -e "${GREEN}Selected timezone: $timeZone${NC}"
 echo -e "${GREEN}Selected hostname: $hostName${NC}"
 echo -e "${GREEN}Selected username: $userName${NC}"
