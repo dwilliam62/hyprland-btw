@@ -409,6 +409,8 @@ if [ "$userName" != "$CURRENT_DECLARED_USER" ]; then
           print "\n  users.users.\"" newuser "\" = {";
           print "    isNormalUser = true;";
           print "    extraGroups = [ \"wheel\" \"input\" ];";
+          print "    home = \"/home/" newuser "\";";
+          print "    createHome = true;";
           print "    shell = pkgs.zsh;";
           print "  };\n";
           added=1; inblk=0
@@ -418,6 +420,8 @@ if [ "$userName" != "$CURRENT_DECLARED_USER" ]; then
         print "\n  users.users.\"" newuser "\" = {";
         print "    isNormalUser = true;";
         print "    extraGroups = [ \"wheel\" \"input\" ];";
+        print "    home = \"/home/" newuser "\";";
+        print "    createHome = true;";
         print "    shell = pkgs.zsh;";
         print "  };";
       }}
