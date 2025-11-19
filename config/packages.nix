@@ -50,6 +50,7 @@
     bibata-cursors
     lunarvim # Alternate neovim (lvim)
     luarocks # LUA for nevoim
+    mesa-demos # needed for inxi
     ncdu
     nh # Nix Helper
     nixd # nix lsp
