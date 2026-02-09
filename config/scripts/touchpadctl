@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# touchpadctl — disable/enable/toggle a touchpad-like device in Hyprland
+# Usage: touchpadctl [disable|enable|toggle|status]
+# Env:
+#   TOUCHPAD_NAME     exact device name from `hyprctl devices` (e.g. "bcm5974")
+#   TOUCHPAD_PATTERN  regex to match names (default includes bcm5974)
+#   HYPR_NOTIFY=1     show a Hyprland notify popup
+
+TOUCHPAD_NAME="bcm5974"
+HYPR_NOTIFY=1
+
+set -euo pipefail
+
+CMD="${1:-disable}"
+PATTERN="${TOUCHPAD_PATTERN:-touchpad|trackpad|bcm5974|\\bbcm\\b|synaptics|elan}"
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+# Try to find a touchpad via JSON first, fall back to name matching.
+list_candidates() {
+  if have jq; then
+    # Prefer devices marked as touchpads if Hyprland reports it
+    local json
+    json="$(hyprctl -j devices 2>/dev/null || true)"
+    if [ -n "$json" ]; then
+      # 1) marked as touchpad
+      echo "$json" | jq -r '(.mice // [])[] | select((.isTouchpad? // false) == true) | .name' || true
+      # 2) fallback by pattern
+      echo "$json" | jq -r '(.mice // [])[] | .name' | grep -iE "$PATTERN" || true
+      return
+    fi
+  fi
+  # Non-JSON fallback parser
+  hyprctl devices |
+    awk '
+        /^[[:space:]]*Mouse at/ { getline; gsub(/^[[:space:]]+|[[:space:]]+$/,""); print }
+      ' | grep -iE "$PATTERN" || true
+}
+
+DEVICE="${TOUCHPAD_NAME:-}"
+if [ -z "$DEVICE" ]; then
+  mapfile -t CANDIDATES < <(list_candidates | awk "NF" | awk '!seen[$0]++')
+  if [ "${#CANDIDATES[@]}" -eq 0 ]; then
+    echo "No touchpad-like device found. Set TOUCHPAD_NAME explicitly (see: hyprctl devices)." >&2
+    exit 1
+  fi
+  DEVICE="${CANDIDATES[0]}"
+fi
+
+statusfile="${XDG_RUNTIME_DIR:-/tmp}/.touchpad.$(echo "$DEVICE" | tr ' /' '__').state"
+
+set_enabled() {
+  local val="$1"
+  hyprctl keyword "device[${DEVICE}]:enabled" "$val" >/dev/null
+  if [ "${HYPR_NOTIFY:-0}" = "1" ]; then
+    hyprctl notify -1 2000 "rgb(7dc4e4)" "Touchpad ${DEVICE}: ${val}"
+  fi
+  printf '%s\n' "$([ "$val" = true ] && echo on || echo off)" >"$statusfile"
+}
+
+case "$CMD" in
+disable) set_enabled false ;;
+enable) set_enabled true ;;
+toggle)
+  cur="unknown"
+  [ -f "$statusfile" ] && cur="$(cat "$statusfile" || true)"
+  if [ "$cur" = "off" ]; then set_enabled true; else set_enabled false; fi
+  ;;
+status)
+  echo "Device: $DEVICE"
+  if [ -f "$statusfile" ]; then echo "Last known state: $(cat "$statusfile")"; else echo "State: unknown"; fi
+  ;;
+*)
+  echo "Usage: $(basename "$0") [disable|enable|toggle|status]" >&2
+  exit 2
+  ;;
+esac
