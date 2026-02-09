@@ -23,10 +23,10 @@
       pkgs.harfbuzz
       pkgs.freetype
       pkgs.fontconfig
-      pkgs.xorg.libX11
-      pkgs.xorg.libXft
-      pkgs.xorg.libXrender
-      pkgs.xorg.libXinerama
+      pkgs.libx11
+      pkgs.libxft
+      pkgs.libxrender
+      pkgs.libxinerama
     ];
 
     # Make the default font match your setup (Maple Mono NF is already used elsewhere in this repo)
