@@ -8,6 +8,7 @@
   rofiLegacyMenu = import ./config/scripts/rofi-legacy.menu.nix {inherit pkgs;};
   configMenu = import ./config/scripts/config-menu.nix {inherit pkgs;};
   keybindsMenu = import ./config/scripts/keybinds.nix {inherit pkgs;};
+  hyprlandChangeLayout = import ./config/scripts/hyprland-change-layout.nix {inherit pkgs;};
 in {
   imports = [
     ./config/terminals/alacritty.nix
@@ -45,6 +46,7 @@ in {
       rofiLegacyMenu
       configMenu
       keybindsMenu
+      hyprlandChangeLayout
       pkgs.dracula-theme
     ];
   };
