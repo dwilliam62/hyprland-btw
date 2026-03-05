@@ -9,6 +9,7 @@
   configMenu = import ./config/scripts/config-menu.nix {inherit pkgs;};
   keybindsMenu = import ./config/scripts/keybinds.nix {inherit pkgs;};
   hyprlandChangeLayout = import ./config/scripts/hyprland-change-layout.nix {inherit pkgs;};
+  hyprlandCycleWindow = import ./config/scripts/hyprland-cycle-window.nix {inherit pkgs;};
 in {
   imports = [
     ./config/terminals/alacritty.nix
@@ -47,6 +48,7 @@ in {
       configMenu
       keybindsMenu
       hyprlandChangeLayout
+      hyprlandCycleWindow
       pkgs.dracula-theme
     ];
   };
