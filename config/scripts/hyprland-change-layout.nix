@@ -33,8 +33,8 @@ pkgs.writeShellScriptBin "hyprland-change-layout" ''
 
     case "$target" in
     "dwindle")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,cyclenext
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,cyclenext,prev
+      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,layoutmsg,cyclenext
+      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,layoutmsg,cycleprev
       ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,O,layoutmsg,togglesplit
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Dwindle Layout"
       ;;
@@ -44,8 +44,8 @@ pkgs.writeShellScriptBin "hyprland-change-layout" ''
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Master Layout"
       ;;
     "scrolling")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,cyclenext
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,cyclenext,prev
+      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,layoutmsg,cyclenext
+      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,layoutmsg,cycleprev
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Scrolling Layout"
       ;;
     "monocle")
