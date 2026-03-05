@@ -26,31 +26,21 @@ pkgs.writeShellScriptBin "hyprland-change-layout" ''
     local target="$1"
 
     ${pkgs.hyprland}/bin/hyprctl keyword general:layout "$target"
-    ${pkgs.hyprland}/bin/hyprctl keyword unbind SUPER,J || true
-    ${pkgs.hyprland}/bin/hyprctl keyword unbind SUPER,K || true
     ${pkgs.hyprland}/bin/hyprctl keyword unbind SUPER,O || true
     ${pkgs.hyprland}/bin/hyprctl keyword unbind SUPER_SHIFT,M || true
 
     case "$target" in
     "dwindle")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,layoutmsg,cyclenext
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,layoutmsg,cycleprev
       ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,O,layoutmsg,togglesplit
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Dwindle Layout"
       ;;
     "master")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,layoutmsg,cyclenext
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,layoutmsg,cycleprev
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Master Layout"
       ;;
     "scrolling")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,layoutmsg,cyclenext
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,layoutmsg,cycleprev
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Scrolling Layout"
       ;;
     "monocle")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,J,layoutmsg,cyclenext
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,K,layoutmsg,cycleprev
       ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER_SHIFT,M,layoutmsg,swapnext
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Monocle Layout"
       ;;
