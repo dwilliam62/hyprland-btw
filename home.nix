@@ -168,4 +168,5 @@ in {
   home.file.".config/rofi/legacy.config.rasi".source = ./config/rofi/legacy.config.rasi;
   home.file.".config/rofi/legacy-rofi.jpg".source = ./config/rofi/legacy-rofi.jpg;
   home.file.".config/rofi/config-menu.rasi".source = ./config/rofi/config-menu.rasi;
+  home.file.".config/swaync/images".source = ./config/swaync/images;
 }
