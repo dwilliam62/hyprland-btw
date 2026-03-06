@@ -6,6 +6,20 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.3.9
+
+- Hyprland v0.54.1
+- Added `scolling` and `monocle` layouts
+- Added layout toggle `SUPERALT + L`
+- `SUPERALT + 1..4` for specific layouts
+  - `SUPERALT + 1` = `dwindle`
+  - `SUPERALT + 2` = `master`
+  - `SUPERALT + 3` = `scrolling`
+  - `SUPERALT + 4` = `monocle`
+  - `SUPER J/K` now maps to current layout mode
+  - Added notifications for layouts
+- Added NixOS icon to notifications
+
 #### Hyprland-btw v0.3.8
 
 - Disabled `noctalia-shell` systemd service
