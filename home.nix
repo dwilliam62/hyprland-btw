@@ -6,6 +6,7 @@
   ...
 }: let
   rofiLegacyMenu = import ./config/scripts/rofi-legacy.menu.nix {inherit pkgs;};
+  DropTerminal = import ./config/scripts/DropTerminal.nix {inherit pkgs;};
   configMenu = import ./config/scripts/config-menu.nix {inherit pkgs;};
   keybindsMenu = import ./config/scripts/keybinds.nix {inherit pkgs;};
   hyprlandChangeLayout = import ./config/scripts/hyprland-change-layout.nix {inherit pkgs;};
@@ -45,6 +46,7 @@ in {
     };
     packages = [
       rofiLegacyMenu
+      DropTerminal
       configMenu
       keybindsMenu
       hyprlandChangeLayout
