@@ -43,6 +43,7 @@ require('lazy').setup {
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { 'tokyonight-night' } },
-  -- automatically check for plugin updates
-  checker = { enabled = true },
+  -- disable update/change notifications (Nix-managed plugins)
+  checker = { enabled = false, notify = false },
+  change_detection = { enabled = false, notify = false },
 }

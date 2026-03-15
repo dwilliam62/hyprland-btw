@@ -52,43 +52,8 @@ in {
     ];
   };
 
-  # Copy bugsvim config files as writable (not RO symlinks) so lazy.nvim can manage them
-  xdg.configFile = let
-    # Helper to recursively map directory contents
-    mapDir = source: target:
-      lib.mapAttrs' (name: _:
-        lib.nameValuePair
-        "nvim/${target}/${name}"
-        {
-          source = "${source}/${name}";
-        })
-      (builtins.readDir source);
-  in
-    # Copy root config files
-    {
-      "nvim/init.lua" = {
-        source = "${bugsvimSrc}/init.lua";
-      };
-      "nvim/.stylua.toml" = {
-        source = "${bugsvimSrc}/.stylua.toml";
-      };
-      "nvim/.luacheckrc" = {
-        source = "${bugsvimSrc}/.luacheckrc";
-      };
-      "nvim/.luarc.json" = {
-        source = "${bugsvimSrc}/.luarc.json";
-      };
-    }
-    # Copy lua config modules
-    // (mapDir "${bugsvimSrc}/lua/config" "lua/config")
-    # Copy plugin configurations
-    // (mapDir "${bugsvimSrc}/lua/plugins" "lua/plugins")
-    # Copy language server configurations
-    // (mapDir "${bugsvimSrc}/lua/servers" "lua/servers")
-    # Copy utility modules
-    // (mapDir "${bugsvimSrc}/lua/utils" "lua/utils");
-
   # Optional: Ensure directories and undo setup on first activation
+  # Also copy bugsvim config as real files so lazy.nvim can update plugins.
   home.activation = {
     bugsvimSetup = lib.hm.dag.entryAfter ["writeBoundary"] ''
       # Create undo directory if it doesn't exist
@@ -97,6 +62,13 @@ in {
         $DRY_RUN_CMD mkdir -p "$UNDO_DIR"
         echo "Created NeoVim undo directory at $UNDO_DIR"
       fi
+
+      # Copy bugsvim config into ~/.config/nvim (writable) so lazy.nvim can manage updates
+      SRC=${bugsvimSrc}
+      DEST="$HOME/.config/nvim"
+      $DRY_RUN_CMD rm -rf "$DEST"
+      $DRY_RUN_CMD mkdir -p "$DEST"
+      $DRY_RUN_CMD cp -r "$SRC"/. "$DEST"/
 
       # Lazy.nvim will self-bootstrap on first nvim run
       # The init.lua handles automatic cloning if lazy.nvim is not present
