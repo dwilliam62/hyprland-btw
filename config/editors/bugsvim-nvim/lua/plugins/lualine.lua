@@ -88,7 +88,9 @@ return {
         lualine_y = {},
         lualine_z = {},
       },
-      tabline = {},
+      tabline = {
+        lualine_a = { { 'buffers', show_filename_only = true } },
+      },
       extensions = { 'fugitive' },
     }
   end,

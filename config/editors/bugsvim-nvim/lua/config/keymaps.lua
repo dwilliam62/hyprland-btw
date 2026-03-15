@@ -12,6 +12,8 @@ vim.keymap.set('n', '<C-u>', '<C-u>zz', { desc = 'Half page up (centered)' })
 -- Buffer navigation
 vim.keymap.set('n', '<leader>bn', '<Cmd>bnext<CR>', { desc = 'Next buffer' })
 vim.keymap.set('n', '<leader>bp', '<Cmd>bprevious<CR>', { desc = 'Previous buffer' })
+vim.keymap.set('n', '<Tab>', '<Cmd>bnext<CR>', { desc = 'Next buffer' })
+vim.keymap.set('n', '<S-Tab>', '<Cmd>bprevious<CR>', { desc = 'Previous buffer' })
 
 -- Better window navigation
 vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })

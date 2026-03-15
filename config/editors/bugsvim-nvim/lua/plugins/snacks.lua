@@ -36,7 +36,12 @@ return {
       enabled = true,
       timeout = 3000,
     },
-    picker = { enabled = true },
+    picker = {
+      enabled = true,
+      files = {
+        cmd = { 'rg', '--files', '--hidden', '--glob', '!.git/*' },
+      },
+    },
     quickfile = { enabled = true },
     scope = { enabled = true },
     scroll = { enabled = true },
