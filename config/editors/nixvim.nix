@@ -247,6 +247,21 @@
       luasnip.enable = true;
       friendly-snippets.enable = true;
 
+      # Disable lazy.nvim update/change notifications (Nix-managed plugins)
+      lazy = {
+        enable = true;
+        settings = {
+          checker = {
+            enabled = false;
+            notify = false;
+          };
+          change_detection = {
+            enabled = false;
+            notify = false;
+          };
+        };
+      };
+
       # Signature help while typing function params
       lsp-signature.enable = true;
 
