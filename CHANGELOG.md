@@ -8,7 +8,8 @@
 
 #### Hyprland-btw v0.3.9
 
-- Hyprland v0.54.1
+- Added `SUPERALT Arrow`` keybinds for `swapwindow` L/R, U/D
+- Hyprland v0.54.2
 - Added `scolling` and `monocle` layouts
 - Added layout toggle `SUPERALT + L`
 - `SUPERALT + 1..4` for specific layouts
