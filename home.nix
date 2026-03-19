@@ -20,6 +20,7 @@ in {
     ./config/terminals/ghostty.nix # Ghostty and ghostty-bg
     ./config/cli/git.nix #config git settings AND username/EMail
     ./config/cli/htop.nix # htop monitor
+    ./config/cli/btop.nix # btop monitor
     ./config/terminals/kitty.nix #kitty term and kitty-bg (background in kitty)
     ./config/noctalia.nix # Noctalia QuickShell wiring (fronm ddubsos)
     ./config/overview.nix # Quickshell-overview workspace preview

@@ -189,7 +189,7 @@ if lspci | grep -qi 'vga\|3d'; then
   if   $has_vm; then
     GPU_PROFILE="vm"
   elif $has_nvidia && $has_intel; then
-    GPU_PROFILE="nvidia"  # treat hybrid laptop as primary NVIDIA for this simple setup
+    GPU_PROFILE="hybrid"
   elif $has_nvidia; then
     GPU_PROFILE="nvidia"
   elif $has_amd; then
@@ -219,7 +219,7 @@ if [ -z "$GPU_PROFILE" ]; then
     echo -e "Non-interactive: defaulting GPU profile to $GPU_PROFILE"
   else
     echo -e "${YELLOW}Automatic GPU detection failed or no specific profile found.${NC}"
-    echo -e "Available GPU profiles: amd | intel | nvidia | vm"
+    echo -e "Available GPU profiles: amd | intel | nvidia | hybrid | vm"
     read -rp "Enter GPU profile [ vm ]: " GPU_PROFILE
     if [ -z "$GPU_PROFILE" ]; then
       GPU_PROFILE="vm"
@@ -442,6 +442,17 @@ else
 fi
 
 # Enable the matching GPU driver module and disable the others.
+to_prime_busid() {
+  local pci="$1" # e.g., 00:02.0
+  local bus_hex="${pci%%:*}"
+  local devfunc="${pci#*:}"
+  local dev_hex="${devfunc%%.*}"
+  local func_hex="${devfunc##*.}"
+  local bus_dec=$((16#$bus_hex))
+  local dev_dec=$((16#$dev_hex))
+  local func_dec=$((16#$func_hex))
+  echo "PCI:${bus_dec}:${dev_dec}:${func_dec}"
+}
 case "$GPU_PROFILE" in
   amd)
     sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = true;|" ./configuration.nix
@@ -457,6 +468,24 @@ case "$GPU_PROFILE" in
     sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
     sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = false;|" ./configuration.nix
     sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = true;|" ./configuration.nix
+    ;;
+  hybrid)
+    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
+    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = true;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = true;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.prime.enable = .*;|drivers.nvidia.prime.enable = true;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.prime.offload.enable = .*;|drivers.nvidia.prime.offload.enable = true;|" ./configuration.nix
+    sed -i "s|drivers.nvidia.prime.sync.enable = .*;|drivers.nvidia.prime.sync.enable = false;|" ./configuration.nix
+    INTEL_PCI=$(lspci -nn | awk '/VGA|3D/ && /Intel/{print $1; exit}')
+    NVIDIA_PCI=$(lspci -nn | awk '/VGA|3D/ && /NVIDIA/{print $1; exit}')
+    if [ -n "$INTEL_PCI" ] && [ -n "$NVIDIA_PCI" ]; then
+      INTEL_BUSID=$(to_prime_busid "$INTEL_PCI")
+      NVIDIA_BUSID=$(to_prime_busid "$NVIDIA_PCI")
+      sed -i "s|drivers.nvidia.prime.intelBusId = \".*\";|drivers.nvidia.prime.intelBusId = \"${INTEL_BUSID}\";|" ./configuration.nix
+      sed -i "s|drivers.nvidia.prime.nvidiaBusId = \".*\";|drivers.nvidia.prime.nvidiaBusId = \"${NVIDIA_BUSID}\";|" ./configuration.nix
+    else
+      echo -e "${YELLOW}Could not detect Intel/NVIDIA PCI IDs. Please set drivers.nvidia.prime.*BusId manually.${NC}"
+    fi
     ;;
   vm|*)
     # VM / unknown: leave all hardware drivers disabled; virtio/VM driver is used.
