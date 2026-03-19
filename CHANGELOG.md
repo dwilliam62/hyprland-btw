@@ -6,6 +6,16 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.4.0
+
+- Added support for Intel-NVIDIA Hybrid laptops in `install.sh`
+- Created branches for `hyprland-btw` VM and `XPS15` laptop
+- Main branch is a copy of the VM branch
+- Added config file for `btop`
+- Added `bugsvim` NeoVIM configuration
+- Fixed `overview` bindings
+- Added volume controls
+
 #### Hyprland-btw v0.3.9
 
 - Added `SUPERALT Arrow`` keybinds for `swapwindow` L/R, U/D
