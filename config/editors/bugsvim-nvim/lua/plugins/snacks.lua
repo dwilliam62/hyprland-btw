@@ -41,6 +41,80 @@ return {
       files = {
         cmd = { 'rg', '--files', '--hidden', '--glob', '!.git/*' },
       },
+      sources = {
+        explorer = {
+          win = {
+            list = {
+              keys = {
+                ['f'] = { 'explorer_menu', mode = { 'n' } },
+                ['<RightMouse>'] = { 'explorer_menu', mode = { 'n' } },
+                ['d'] = { 'explorer_delete', mode = { 'n' } },
+              },
+            },
+          },
+          actions = {
+            explorer_delete = function(picker)
+              local item = picker:current()
+              if not item then
+                Snacks.notify.warn('No item selected', { title = 'Explorer' })
+                return
+              end
+
+              local path = item.file
+              if not path or path == '' then
+                Snacks.notify.warn('Cannot delete: no file path', { title = 'Explorer' })
+                return
+              end
+
+              local name = vim.fn.fnamemodify(path, ':t')
+              local choice = vim.fn.confirm('Delete ' .. name .. '?', '&Yes\n&No', 2)
+              if choice == 1 then
+                local stat = vim.loop.fs_stat(path)
+                local ok, err
+                if stat and stat.type == 'directory' then
+                  ok, err = pcall(vim.fn.delete, path, 'rf')
+                else
+                  ok, err = pcall(vim.fn.delete, path)
+                end
+
+                if ok then
+                  Snacks.notify.info('Deleted: ' .. name, { title = 'Explorer' })
+                  picker:find({
+                    on_done = function() end,
+                  })
+                else
+                  Snacks.notify.error('Failed to delete: ' .. tostring(err), { title = 'Explorer' })
+                end
+              end
+            end,
+            explorer_menu = function(picker)
+              local items = {
+                { label = ' Add new file/dir', action = 'explorer_add' },
+                { label = '✏️ Rename', action = 'explorer_rename' },
+                { label = ' Copy', action = 'explorer_copy' },
+                { label = ' Paste', action = 'explorer_paste' },
+                { label = ' Move', action = 'explorer_move' },
+                { label = '️ Delete', action = 'explorer_del' },
+                { label = ' Yank path', action = 'explorer_yank' },
+                { label = ' Open with system', action = 'explorer_open' },
+                { label = ' Close directory', action = 'explorer_close' },
+                { label = ' Refresh', action = 'explorer_update' },
+              }
+
+              vim.ui.select(items, {
+                prompt = 'File Menu',
+                format_item = function(item)
+                  return item.label
+                end,
+              }, function(choice)
+                if choice then
+                  picker:action(choice.action)
+                end
+              end)
+            end,
+          },
+        },
+      },
     },
     quickfile = { enabled = true },
     scope = { enabled = true },
