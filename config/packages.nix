@@ -59,11 +59,14 @@
     htop
     hyfetch
     inxi # diagnostic utils
+    isd # Systemd tool
     kitty
+    kmon # Kernel monitor
+    lstr # Tree like tool with icon, git stat, etc
     luarocks # LUA for nevoim
     mdcat
     mesa-demos # needed for inxi
-    mpv  # video player
+    mpv # video player
     nemo-with-extensions # nemo file mgr
     ncdu # show diskusage
     nh # Nix Helper
@@ -77,10 +80,11 @@
     starship # custom prompt
     tmux #Terminal mux with hybridd ddubs-tonybtw config
     ugrep
-    vlc  # Video Player
-    warp-terminal  # AI and Terminal
-    wezterm  # Terminal
+    vlc # Video Player
+    warp-terminal # AI and Terminal
+    wezterm # Terminal
     wget
-    zig  # Compiler
+    zenith # btop/htop like tool
+    zig # Compiler
   ];
 }
