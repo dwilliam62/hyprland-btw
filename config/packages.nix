@@ -59,7 +59,10 @@
     htop
     hyfetch
     inxi # diagnostic utils
+    isd # SystemD tool
     kitty
+    kmon # Kernel Monitor
+    lstr # Tree like tool with icons, etc
     luarocks # LUA for nevoim
     mdcat
     mesa-demos # needed for inxi
@@ -81,6 +84,7 @@
     warp-terminal # AI and Terminal
     wezterm # Terminal
     wget
+    zenith # Btop/htop/bottom style monitor
     zig # Compiler
   ];
 }
