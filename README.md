@@ -1,4 +1,4 @@
-TESTING THIS IS TO TEST WRITE ACCESS OF COLLAB!
+
 
 # hyprland-btw — Hyprland-on-NixOS (single-host)
 
