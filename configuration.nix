@@ -194,11 +194,5 @@
   # Home Manager backup extension for conflicting files
   home-manager.backupFileExtension = "backup";
 
-  nixpkgs.overlays = [
-    (final: prev: {
-      nodePackages = prev.nodePackages_latest;
-    })
-  ];
-
   system.stateVersion = "25.11"; # Did you read the comment?
 }
