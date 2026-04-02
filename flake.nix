@@ -32,6 +32,11 @@
       modules = [
         {
           nixpkgs.config.allowUnfree = true;
+          nixpkgs.overlays = [
+            (final: prev: {
+              nodePackages = prev.nodePackages_latest;
+            })
+          ];
         }
         ./configuration.nix
         ./config/nh.nix

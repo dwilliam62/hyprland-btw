@@ -18,12 +18,12 @@ in {
     # Language Servers
     lua-language-server
     pyright
-    nodePackages_latest.typescript-language-server
+    typescript-language-server
     tailwindcss-language-server
     clang-tools
-    nodePackages_latest.bash-language-server
+    bash-language-server
     rust-analyzer
-    nodePackages_latest.vscode-langservers-extracted # html, css, json, eslint
+    vscode-langservers-extracted # html, css, json, eslint
     nil # Nix LSP
     hyprls
 
@@ -37,7 +37,7 @@ in {
 
     # Linters
     ruff
-    nodePackages_latest.eslint_d
+    eslint_d
     luajitPackages.luacheck
     cpplint
 
