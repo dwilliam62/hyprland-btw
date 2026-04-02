@@ -558,8 +558,8 @@
       lazygit
       nil
       nixpkgs-fmt
-      nodePackages.typescript-language-server
-      nodePackages.typescript
+      typescript-language-server
+      typescript
       pyright
       lua-language-server
       marksman
@@ -573,7 +573,7 @@
       vscode-langservers-extracted
       zls
       tailwindcss-language-server
-      nodePackages.bash-language-server
+      bash-language-server
     ];
 
     extraPlugins = with pkgs.vimPlugins; [
