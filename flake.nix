@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     #nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,6 +20,7 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    nixpkgs-stable,
     home-manager,
     nixvim,
     noctalia,
@@ -32,6 +34,13 @@
       modules = [
         {
           nixpkgs.config.allowUnfree = true;
+          nixpkgs.overlays = [
+            (final: prev: {
+              neovim = nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim;
+              neovim-unwrapped =
+                nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim-unwrapped;
+            })
+          ];
         }
         ./configuration.nix
         ./config/nh.nix

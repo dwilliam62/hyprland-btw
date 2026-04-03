@@ -6,6 +6,11 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.4.1
+
+- Pinned `neovim` to 11.5 from 12.0
+  - 12.0 breaks inline images for snacks plugin
+
 #### Hyprland-btw v0.4.0
 
 - Added support for Intel-NVIDIA Hybrid laptops in `install.sh`
