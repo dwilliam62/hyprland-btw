@@ -63,9 +63,13 @@ in {
       # Copy bugsvim config into ~/.config/nvim (writable) so lazy.nvim can manage updates
       SRC=${bugsvimSrc}
       DEST="$HOME/.config/nvim"
+      # Ensure existing files are writable so rm succeeds
+      $DRY_RUN_CMD chmod -R u+w "$DEST" 2>/dev/null || true
       $DRY_RUN_CMD rm -rf "$DEST"
       $DRY_RUN_CMD mkdir -p "$DEST"
       $DRY_RUN_CMD cp -r "$SRC"/. "$DEST"/
+      # Ensure config files are writable so Home Manager can replace them on rebuild
+      $DRY_RUN_CMD chmod -R u+w "$DEST"
 
       # Lazy.nvim will self-bootstrap on first nvim run
       # The init.lua handles automatic cloning if lazy.nvim is not present
