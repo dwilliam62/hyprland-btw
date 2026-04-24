@@ -6,7 +6,7 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
-#### Hyprland-btw v0.4.0
+#### Hyprland-btw v0.4.2
 
 - Disabled `systemd gpt auto`
   - It enables swap partitions automatically
@@ -16,9 +16,22 @@
 - Fixed write permission errors w/`bigvim` on rebuild
   - HomeMgr now makes dir writeable
 - Added `noctalia-qs` Their forked version of `quickshell`
-- Pinned `neovim` to v11.5
-  - `bugsvim` plugins `markdown` and `snacks`
-  - They aren't compatible with new i`nevoim v12.x` and latest `tree-sitter v26.x`
+
+#### Hyprland-btw v0.4.1
+
+- Pinned `neovim` to v11.5 from v12.0
+  - NeoVIM v12.x breaks inline images for snacks plugin and markdown
+  - Also pinned `tree-sitter` to v25.x
+
+#### Hyprland-btw v0.4.0
+
+- Added support for Intel-NVIDIA Hybrid laptops in `install.sh`
+- Created branches for `hyprland-btw` VM and `XPS15` laptop
+- Main branch is a copy of the VM branch
+- Added config file for `btop`
+- Added `bugsvim` NeoVIM configuration
+- Fixed `overview` bindings
+- Added volume controls
 
 #### Hyprland-btw v0.3.9
 
