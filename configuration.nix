@@ -9,7 +9,11 @@
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
+    # Pin to a known-good LTS kernel to avoid 7.0 boot failures.
     kernelPackages = pkgs.linuxPackages_latest;
+    # Prevent systemd from auto-activating GPT swap partitions.
+    kernelParams = ["systemd.gpt_auto=0"];
+    #kernelPackages = pkgs.linuxPackages_6_19;
   };
 
   zramSwap = {

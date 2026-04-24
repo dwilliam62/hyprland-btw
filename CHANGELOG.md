@@ -6,10 +6,24 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.4.0
+
+- Disabled `systemd gpt auto`
+  - It enables swap partitions automatically
+  - Converted to `zramswap` insted
+- Updated to 7.0.1 kernel
+- Disable `webdav` it fails to build
+- Fixed write permission errors w/`bigvim` on rebuild
+  - HomeMgr now makes dir writeable
+- Added `noctalia-qs` Their forked version of `quickshell`
+- Pinned `neovim` to v11.5
+  - `bugsvim` plugins `markdown` and `snacks`
+  - They aren't compatible with new i`nevoim v12.x` and latest `tree-sitter v26.x`
+
 #### Hyprland-btw v0.3.9
 
 - Added `SUPERALT Arrow`` keybinds for `swapwindow` L/R, U/D
-- Hyprland v0.54.2
+- Hyprland v0.54.3
 - Added `scolling` and `monocle` layouts
 - Added layout toggle `SUPERALT + L`
 - `SUPERALT + 1..4` for specific layouts

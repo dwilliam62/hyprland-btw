@@ -79,6 +79,7 @@
     #rustup
     starship # custom prompt
     tmux #Terminal mux with hybridd ddubs-tonybtw config
+    ttop # resource monitor
     ugrep
     vlc # Video Player
     warp-terminal # AI and Terminal
