@@ -6,6 +6,11 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.4.2
+
+- Converted existing hyprland conf files to LUA
+  - `hyprland-btw/config/hypr/lua`
+
 #### Hyprland-btw v0.4.1
 
 - Pinned `neovim` to 11.5 from 12.0
