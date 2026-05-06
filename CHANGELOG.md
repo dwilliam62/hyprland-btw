@@ -8,6 +8,7 @@
 
 #### Hyprland-btw v0.4.2
 
+- Added basic LUA config files for home mgr
 - Disabled `systemd gpt auto`
   - It enables swap partitions automatically
   - Converted to `zramswap` insted
