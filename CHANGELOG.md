@@ -6,20 +6,18 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
-#### Hyprland-btw v0.4.2
+#### Hyprland-btw v0.4.1
 
-- Added basic LUA config files for home mgr
+- Updated Hyprland to v0.55
+- Migrated to LUA completely!
 - Disabled `systemd gpt auto`
   - It enables swap partitions automatically
-  - Converted to `zramswap` insted
-- Updated to 7.0.1 kernel
+  - Converted to `zramswap` instead
+- Updated to 7.0.x kernel
 - Disable `webdav` it fails to build
 - Fixed write permission errors w/`bigvim` on rebuild
   - HomeMgr now makes dir writeable
 - Added `noctalia-qs` Their forked version of `quickshell`
-
-#### Hyprland-btw v0.4.1
-
 - Pinned `neovim` to v11.5 from v12.0
   - NeoVIM v12.x breaks inline images for snacks plugin and markdown
   - Also pinned `tree-sitter` to v25.x
