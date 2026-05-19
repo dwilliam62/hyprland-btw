@@ -112,6 +112,14 @@
           for = "windows";
         }
       ];
+      appimage = [
+        {
+          run = ''appimage-run "$1"'';
+          orphan = true;
+          desc = "Run AppImage";
+          for = "linux";
+        }
+      ];
       play = [
         {
           run = ''mpv --force-window "$@"'';
@@ -164,6 +172,10 @@
         {
           mime = "inode/empty";
           use = ["edit" "reveal"];
+        }
+        {
+          name = "*.{AppImage,appimage}";
+          use = ["appimage" "reveal"];
         }
         {
           name = "*";

@@ -6,15 +6,23 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
-#### Hyprland-btw v0.4.2
-
-- Converted existing hyprland conf files to LUA
-  - `hyprland-btw/config/hypr/lua`
-
 #### Hyprland-btw v0.4.1
 
-- Pinned `neovim` to 11.5 from 12.0
-  - 12.0 breaks inline images for snacks plugin
+- Added `appimage-run` and `gearlever`
+- Removed `onlyoffice`
+- Updated Hyprland to v0.55
+- Migrated to LUA completely!
+- Disabled `systemd gpt auto`
+  - It enables swap partitions automatically
+  - Converted to `zramswap` instead
+- Updated to 7.0.x kernel
+- Disable `webdav` it fails to build
+- Fixed write permission errors w/`bigvim` on rebuild
+  - HomeMgr now makes dir writeable
+- Added `noctalia-qs` Their forked version of `quickshell`
+- Pinned `neovim` to v11.5 from v12.0
+  - NeoVIM v12.x breaks inline images for snacks plugin and markdown
+  - Also pinned `tree-sitter` to v25.x
 
 #### Hyprland-btw v0.4.0
 
@@ -29,7 +37,7 @@
 #### Hyprland-btw v0.3.9
 
 - Added `SUPERALT Arrow`` keybinds for `swapwindow` L/R, U/D
-- Hyprland v0.54.2
+- Hyprland v0.54.3
 - Added `scolling` and `monocle` layouts
 - Added layout toggle `SUPERALT + L`
 - `SUPERALT + 1..4` for specific layouts

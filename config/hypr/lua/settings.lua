@@ -1,6 +1,5 @@
 hl.config({
   dwindle = {
-    pseudotile = true,
     preserve_split = true,
     force_split = 2,
   },
@@ -48,5 +47,13 @@ hl.config({
   misc = {
     force_default_wallpaper = -1,
     disable_hyprland_logo = true,
+  },
+})
+
+hl.config({
+  binds = {
+    workspace_back_and_forth = true,
+    allow_workspace_cycles = true,
+    pass_mouse_when_bound = false,
   },
 })

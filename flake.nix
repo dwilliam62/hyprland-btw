@@ -33,20 +33,12 @@
       system = "x86_64-linux";
       modules = [
         {
-          nixpkgs.config = {
-            allowUnfree = true;
-            permittedInsecurePackages = [ "openssl-1.1.1w" ];
-          };
+          nixpkgs.config.allowUnfree = true;
           nixpkgs.overlays = [
             (final: prev: {
               neovim = nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim;
               neovim-unwrapped =
                 nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim-unwrapped;
-              mpv = nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.mpv;
-              mpvpaper = nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.mpvpaper;
-              mpv-with-scripts =
-                nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.mpv-with-scripts;
-              yt-dlp = nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.yt-dlp;
             })
           ];
         }

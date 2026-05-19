@@ -25,13 +25,13 @@ pkgs.writeShellScriptBin "hyprland-change-layout" ''
   set_layout() {
     local target="$1"
 
-    ${pkgs.hyprland}/bin/hyprctl keyword general:layout "$target"
-    ${pkgs.hyprland}/bin/hyprctl keyword unbind SUPER,O || true
-    ${pkgs.hyprland}/bin/hyprctl keyword unbind SUPER_SHIFT,M || true
+    ${pkgs.hyprland}/bin/hyprctl eval "hl.config({ general = { layout = '$target' }})"
+    ${pkgs.hyprland}/bin/hyprctl eval "pcall(function() hl.unbind('SUPER + O') end)" || true
+    ${pkgs.hyprland}/bin/hyprctl eval "pcall(function() hl.unbind('SUPER + SHIFT + M') end)" || true
 
     case "$target" in
     "dwindle")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER,O,layoutmsg,togglesplit
+      ${pkgs.hyprland}/bin/hyprctl eval "hl.bind('SUPER + O', hl.dsp.layout('togglesplit'), { description = 'Toggle split' })"
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Dwindle Layout"
       ;;
     "master")
@@ -41,7 +41,7 @@ pkgs.writeShellScriptBin "hyprland-change-layout" ''
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Scrolling Layout"
       ;;
     "monocle")
-      ${pkgs.hyprland}/bin/hyprctl keyword bind SUPER_SHIFT,M,layoutmsg,swapnext
+      ${pkgs.hyprland}/bin/hyprctl eval "hl.bind('SUPER + SHIFT + M', hl.dsp.layout('swapnext'), { description = 'Swap next in monocle' })"
       ${pkgs.libnotify}/bin/notify-send -e -u low -i "$notif" " Monocle Layout"
       ;;
     *)

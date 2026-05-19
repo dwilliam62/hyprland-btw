@@ -1,0 +1,5 @@
+-- Converted from config/hypr/workspaces.conf.
+-- No active workspace rules are currently enabled.
+--
+-- Example:
+-- hl.workspace_rule({ workspace = "1", monitor = "eDP-1" })
