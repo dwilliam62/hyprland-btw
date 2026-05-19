@@ -36,6 +36,7 @@ with a few additions:
 - Simple flake
 - Simple Home Manager
 - Noctalia shell
+- Flatpak + AppImage support
 - Simple waybar as alternative
 - NeoVIM configured by `nixvim`
 - Tony,BTW's TMUX configuration

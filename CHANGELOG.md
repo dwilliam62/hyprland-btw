@@ -8,6 +8,8 @@
 
 #### Hyprland-btw v0.4.1
 
+- Added `appimage-run` and `gearlever`
+- Removed `onlyoffice`
 - Updated Hyprland to v0.55
 - Migrated to LUA completely!
 - Disabled `systemd gpt auto`

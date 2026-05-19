@@ -121,6 +121,10 @@
       xwayland.enable = true;
       withUWSM = false;
     };
+    appimage = {
+      enable = true;
+      binfmt = true;
+    };
     firefox.enable = false;
     neovim = {
       enable = true;
