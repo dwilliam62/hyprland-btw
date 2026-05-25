@@ -6,6 +6,12 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.4.2
+
+- Replaced noctalia flake with nixpkgs 
+- Replaced `quickshell` with `noctalia-qs`
+- Fixed workspace bindings 
+
 #### Hyprland-btw v0.4.1
 
 - Added `appimage-run` and `gearlever`

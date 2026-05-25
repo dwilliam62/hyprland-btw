@@ -16,7 +16,9 @@
     clipman
     cliphist
     grim
-    quickshell
+    #quickshell
+    noctalia-shell
+    noctalia-qs
     slurp
     nwg-look
     rofi

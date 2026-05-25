@@ -2,153 +2,140 @@
 -- Edit this file directly for Lua-native keybinding changes.
 
 local function trim(value)
-  return (value or ""):gsub("^%s+", ""):gsub("%s+$", "")
+	return (value or ""):gsub("^%s+", ""):gsub("%s+$", "")
 end
 
 local function chord(mods, key)
-  mods = trim(mods):gsub("%s+", " + ")
-  key = trim(key)
-  if mods == "" then
-    return key
-  end
-  return mods .. " + " .. key
+	mods = trim(mods):gsub("%s+", " + ")
+	key = trim(key)
+	if mods == "" then
+		return key
+	end
+	return mods .. " + " .. key
 end
 
 local function exec_cmd(cmd)
-  return function()
-    hl.exec_cmd(cmd)
-  end
+	return function()
+		hl.exec_cmd(cmd)
+	end
 end
 local function direction(value)
-  local directions = {
-    l = "left",
-    r = "right",
-    u = "up",
-    d = "down",
-    left = "left",
-    right = "right",
-    up = "up",
-    down = "down",
-  }
-  value = trim(value)
-  return directions[value] or value
-end
-
-local function workspace_from_arg(value)
-  value = trim(value)
-  local relative = value:match("^e([%+%-]%d+)$")
-  if relative then
-    local current = hl.get_active_workspace and hl.get_active_workspace() or nil
-    if current and current.id then
-      return hl.get_workspace(current.id + tonumber(relative))
-    end
-    return nil
-  end
-  local id = tonumber(value)
-  if id then
-    return hl.get_workspace(id)
-  end
-  return nil
+	local directions = {
+		l = "left",
+		r = "right",
+		u = "up",
+		d = "down",
+		left = "left",
+		right = "right",
+		up = "up",
+		down = "down",
+	}
+	value = trim(value)
+	return directions[value] or value
 end
 
 local function dispatch(name, args)
-  name = trim(name)
-  args = trim(args)
+	name = trim(name)
+	args = trim(args)
 
-  if name == "killactive" and hl.dsp and hl.dsp.window and hl.dsp.window.close then
-    return function()
-      hl.dispatch(hl.dsp.window.close())
-    end
-  end
+	if name == "killactive" and hl.dsp and hl.dsp.window and hl.dsp.window.close then
+		return function()
+			hl.dispatch(hl.dsp.window.close())
+		end
+	end
 
-  if name == "exit" and hl.dsp and hl.dsp.exit then
-    return function()
-      hl.dispatch(hl.dsp.exit())
-    end
-  end
+	if name == "exit" and hl.dsp and hl.dsp.exit then
+		return function()
+			hl.dispatch(hl.dsp.exit())
+		end
+	end
 
-  if name == "togglefloating" and hl.dsp and hl.dsp.window and hl.dsp.window.float then
-    return function()
-      hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
-    end
-  end
+	if name == "togglefloating" and hl.dsp and hl.dsp.window and hl.dsp.window.float then
+		return function()
+			hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
+		end
+	end
 
-  if name == "fullscreen" and hl.dsp and hl.dsp.window and hl.dsp.window.fullscreen then
-    local mode = (args == "1") and "maximized" or "fullscreen"
-    return function()
-      hl.dispatch(hl.dsp.window.fullscreen({ mode = mode }))
-    end
-  end
+	if name == "fullscreen" and hl.dsp and hl.dsp.window and hl.dsp.window.fullscreen then
+		local mode = (args == "1") and "maximized" or "fullscreen"
+		return function()
+			hl.dispatch(hl.dsp.window.fullscreen({ mode = mode }))
+		end
+	end
 
-  if name == "movefocus" and hl.dsp and hl.dsp.focus then
-    local dir = direction(args)
-    return function()
-      hl.dispatch(hl.dsp.focus({ direction = dir }))
-    end
-  end
+	if name == "movefocus" and hl.dsp and hl.dsp.focus then
+		local dir = direction(args)
+		return function()
+			hl.dispatch(hl.dsp.focus({ direction = dir }))
+		end
+	end
 
-  if name == "swapwindow" and hl.dsp and hl.dsp.window and hl.dsp.window.swap then
-    local dir = direction(args)
-    return function()
-      hl.dispatch(hl.dsp.window.swap({ direction = dir }))
-    end
-  end
+	if name == "swapwindow" and hl.dsp and hl.dsp.window and hl.dsp.window.swap then
+		local dir = direction(args)
+		return function()
+			hl.dispatch(hl.dsp.window.swap({ direction = dir }))
+		end
+	end
 
-  if name == "workspace" and hl.dsp and hl.dsp.focus then
-    return function()
-      local workspace = workspace_from_arg(args)
-      if workspace then
-        hl.dispatch(hl.dsp.focus({ workspace = workspace }))
-      end
-    end
-  end
+	if name == "workspace" then
+		local id = tonumber(args)
+		if id and hl.dsp and hl.dsp.focus then
+			return function()
+				hl.dispatch(hl.dsp.focus({ workspace = id }))
+			end
+		end
+		if args == "" then
+			return function() end
+		end
+		return exec_cmd("hyprctl dispatch workspace " .. args)
+	end
 
-  if name == "movetoworkspace" and hl.dsp and hl.dsp.window and hl.dsp.window.move then
-    local id = tonumber(args)
-    return function()
-      if id then
-        hl.dispatch(hl.dsp.window.move({ workspace = id }))
-      end
-    end
-  end
+	if name == "movetoworkspace" and hl.dsp and hl.dsp.window and hl.dsp.window.move then
+		local id = tonumber(args)
+		return function()
+			if id then
+				hl.dispatch(hl.dsp.window.move({ workspace = id }))
+			end
+		end
+	end
 
-  local raw = name
-  if args ~= "" then
-    raw = raw .. " " .. args
-  end
-  local cmd = "hyprctl dispatch " .. raw
-  return exec_cmd(cmd)
+	local raw = name
+	if args ~= "" then
+		raw = raw .. " " .. args
+	end
+	local cmd = "hyprctl dispatch " .. raw
+	return exec_cmd(cmd)
 end
 
 local function bindd(mods, key, description, dispatcher, args)
-  local action
-  if dispatcher == "exec" then
-    action = exec_cmd(args)
-  else
-    action = dispatch(dispatcher, args or "")
-  end
-  local opts = {}
-  if description and description ~= "" then
-    opts.description = description
-  end
-  hl.bind(chord(mods, key), action, opts)
+	local action
+	if dispatcher == "exec" then
+		action = exec_cmd(args)
+	else
+		action = dispatch(dispatcher, args or "")
+	end
+	local opts = {}
+	if description and description ~= "" then
+		opts.description = description
+	end
+	hl.bind(chord(mods, key), action, opts)
 end
 
 local function bindm(mods, key, description, dispatcher)
-  local action
-  if dispatcher == "movewindow" and hl.dsp and hl.dsp.window and hl.dsp.window.drag then
-    action = hl.dsp.window.drag()
-  elseif dispatcher == "resizewindow" and hl.dsp and hl.dsp.window and hl.dsp.window.resize then
-    action = hl.dsp.window.resize()
-  elseif hl.dsp and hl.dsp.exec_raw then
-    action = hl.dsp.exec_raw(dispatcher)
-  else
-    action = dispatch(dispatcher, "")
-  end
-  hl.bind(chord(mods, key), action, { description = description, mouse = true })
+	local action
+	if dispatcher == "movewindow" and hl.dsp and hl.dsp.window and hl.dsp.window.drag then
+		action = hl.dsp.window.drag()
+	elseif dispatcher == "resizewindow" and hl.dsp and hl.dsp.window and hl.dsp.window.resize then
+		action = hl.dsp.window.resize()
+	elseif hl.dsp and hl.dsp.exec_raw then
+		action = hl.dsp.exec_raw(dispatcher)
+	else
+		action = dispatch(dispatcher, "")
+	end
+	hl.bind(chord(mods, key), action, { description = description, mouse = true })
 end
 
-bindd("SUPER", "Return", "Launch Terminal", "exec", "kitty")
+bindd("SUPER", "Return", "Launch Terminal", "exec", "ghostty")
 bindd("SUPER SHIFT", "Return", "Launch Kitty", "exec", "kitty-bg")
 bindd("SUPER", "Q", "Close Active Window", "killactive", "")
 bindd("SUPER SHIFT", "Q", "Exit Hyprland", "exit", "")
@@ -162,7 +149,8 @@ bindd("ALT SHIFT", "S", "Take region screenshot", "exec", "hyprshot -m region -o
 bindd("SUPER SHIFT", "K", "Search Keybinds", "exec", "keybinds")
 bindd("SUPER", "Tab", "QS Overview", "exec", "qs ipc -c overview call overview toggle")
 bindd("SUPER", "A", "QS Overview", "exec", "qs ipc -c overview call overview toggle")
-bindd("SUPER", "D", "Toggle launcher", "exec", "noctalia-shell ipc call launcher toggle")
+bindd("SUPER", "D", "Show app menu", "exec", "rofi-legacy.menu")
+-- bindd("SUPER", "D", "Toggle launcher", "exec", "noctalia-shell ipc call launcher toggle")
 bindd("SUPER", "M", "Toggle notifications", "exec", "noctalia-shell ipc call notifications toggle")
 bindd("SUPER", "V", "Open clipboard", "exec", "noctalia-shell ipc call launcher clipboard")
 bindd("SUPER SHIFT", "comma", "Open settings", "exec", "noctalia-shell ipc call settings toggle")
