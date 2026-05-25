@@ -1,17 +1,15 @@
 {
   pkgs,
-  inputs,
   lib,
   ...
 }: let
-  system = pkgs.stdenv.hostPlatform.system;
-  noctaliaPkg = inputs.noctalia.packages.${system}.default;
+  noctaliaPkg = pkgs.noctalia-shell;
   configDir = "${noctaliaPkg}/share/noctalia-shell";
 in {
   # Install the Noctalia package
   home.packages = [
     noctaliaPkg
-    pkgs.quickshell # Ensure quickshell is available for the service
+    pkgs.noctalia-qs
     pkgs.gpu-screen-recorder
   ];
 

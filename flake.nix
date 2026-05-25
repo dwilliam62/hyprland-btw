@@ -10,12 +10,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixvim.url = "github:nix-community/nixvim";
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
+    # noctalia = {
+    #  url = "github:noctalia-dev/noctalia-shell";
+    #  inputs.nixpkgs.follows = "nixpkgs";
+    #};
     alejandra.url = "github:kamadorueda/alejandra";
   };
+
+  # Removed noctalia to try nix-pkgs
 
   outputs = inputs @ {
     self,
@@ -23,7 +26,6 @@
     nixpkgs-stable,
     home-manager,
     nixvim,
-    noctalia,
     alejandra,
     ...
   }: let
