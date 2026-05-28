@@ -8,9 +8,10 @@
 
 #### Hyprland-btw v0.4.2
 
-- Replaced noctalia flake with nixpkgs 
+- Add: `synfech`
+- Replaced noctalia flake with nixpkgs
 - Replaced `quickshell` with `noctalia-qs`
-- Fixed workspace bindings 
+- Fixed workspace bindings
 
 #### Hyprland-btw v0.4.1
 

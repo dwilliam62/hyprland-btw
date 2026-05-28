@@ -15,6 +15,10 @@
     #  url = "github:noctalia-dev/noctalia-shell";
     #  inputs.nixpkgs.follows = "nixpkgs";
     #};
+    synfetch = {
+      url = "github:SXSLVT/synfetch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     alejandra.url = "github:kamadorueda/alejandra";
   };
 
@@ -41,6 +45,7 @@
               neovim = nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim;
               neovim-unwrapped =
                 nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim-unwrapped;
+              synfetch = inputs.synfetch.packages.${final.stdenv.hostPlatform.system}.default;
             })
           ];
         }
