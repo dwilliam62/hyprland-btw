@@ -85,6 +85,7 @@
     ripgrep
     #rustup
     starship # custom prompt
+    synfetch
     tmux #Terminal mux with hybridd ddubs-tonybtw config
     ttop # resource monitor
     ugrep
