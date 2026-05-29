@@ -6,14 +6,18 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.4.3
+
+- Add: `wayle` Alternaive waybar option
+- Fixed workspace bindings
+- Updated `yazi` config for current version
+  - Using HomeMgr to copy source files right now
+  - Will convert to NIX later
+
 #### Hyprland-btw v0.4.2
 
-- Replaced noctalia flake with nixpkgs 
+- Replaced noctalia flake with nixpkgs
 - Replaced `quickshell` with `noctalia-qs`
-- Fixed workspace bindings 
-- Updated `yazi` config for current version 
-  - Using HomeMgr to copy source files right now 
-  - Will convert to NIX later
 
 #### Hyprland-btw v0.4.1
 
