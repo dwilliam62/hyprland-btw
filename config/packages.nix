@@ -82,6 +82,7 @@
     onefetch # git repo fetch
     #onlyoffice-desktopeditors
     pciutils
+    ptyxis # Terminal
     ripgrep
     #rustup
     starship # custom prompt
@@ -91,6 +92,7 @@
     ugrep
     vlc # Video Player
     #warp-terminal # AI and Terminal
+    wayle # Waybar alternative from hyprpanel devs
     wezterm # Terminal
     wget
     zenith # Btop/htop/bottom style monitor

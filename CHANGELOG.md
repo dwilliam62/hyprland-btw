@@ -11,6 +11,9 @@
 - Replaced noctalia flake with nixpkgs 
 - Replaced `quickshell` with `noctalia-qs`
 - Fixed workspace bindings 
+- Updated `yazi` config for current version 
+  - Using HomeMgr to copy source files right now 
+  - Will convert to NIX later
 
 #### Hyprland-btw v0.4.1
 

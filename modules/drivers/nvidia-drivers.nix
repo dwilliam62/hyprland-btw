@@ -39,8 +39,7 @@ in {
         assertion =
           (!cfg.prime.enable)
           || (cfg.prime.intelBusId != null && cfg.prime.nvidiaBusId != null);
-        message =
-          "drivers.nvidia.prime.enable requires both drivers.nvidia.prime.intelBusId and drivers.nvidia.prime.nvidiaBusId.";
+        message = "drivers.nvidia.prime.enable requires both drivers.nvidia.prime.intelBusId and drivers.nvidia.prime.nvidiaBusId.";
       }
       {
         assertion = !(cfg.prime.offload.enable && cfg.prime.sync.enable);
