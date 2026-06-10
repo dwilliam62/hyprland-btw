@@ -25,7 +25,7 @@ end
 local startup_commands = {
   "hyprpaper",
   "qs -c overview",
-  "noctalia-shell",
+  "noctalia",
 }
 
 local function run_startup_commands()
