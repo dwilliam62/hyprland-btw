@@ -217,6 +217,26 @@
         "type": "github"
       }
     },
+    "noctalia": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1781060530,
+        "narHash": "sha256-0Xz8GxLn2HTsOG0l1LUmM3m8OhBV7A3K+Yrd6lPqbKg=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "rev": "cd866a91078d5e7aa8c263d8de92f7b01d3dba2a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "alejandra": "alejandra",
@@ -224,6 +244,7 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable",
         "nixvim": "nixvim",
+        "noctalia": "noctalia",
         "synfetch": "synfetch"
       }
     },
