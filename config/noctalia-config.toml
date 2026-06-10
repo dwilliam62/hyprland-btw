@@ -1,0 +1,53 @@
+[bar.default]
+center = [ "screenshot", "workspaces", "caffeine" ]
+end = [ "clock", "date", "weather", "tray", "notifications", "clipboard", "volume", "control-center", "session" ]
+margin_ends = 20
+scale = 1.2500000111758709
+start = [ "launcher", "wallpaper", "active_window", "audio_visualizer" ]
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = [ "lockscreen-login-box@Virtual-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@Virtual-1"]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 960.0
+    cy = 957.0
+    output = "Virtual-1"
+    rotation = 0.0
+    type = "login_box"
+
+[shell]
+font_family = "DejaVu Sans"
+telemetry_enabled = true
+
+    [shell.panel]
+    control_center_placement = "centered"
+    transparency_mode = "soft"
+
+[theme]
+community_palette = "Catppuccin Lavender"
+source = "community"
+wallpaper_scheme = "m3-fruit-salad"
+
+[wallpaper]
+directory = "/home/dwilliams/Pictures/Wallpapers"
+
+    [wallpaper.default]
+    path = "/home/dwilliams/Pictures/Wallpapers/bluehour.jpg"
+
+    [wallpaper.last]
+    path = "/home/dwilliams/Pictures/Wallpapers/bluehour.jpg"
+
+    [wallpaper.monitors.Virtual-1]
+    path = "/home/dwilliams/Pictures/Wallpapers/bluehour.jpg"

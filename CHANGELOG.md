@@ -6,6 +6,12 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.4.4
+
+- Updated noctalia to v5.0.0 
+- Added systemd user service to start noctalia 
+- Updated keybinds for new version 
+
 #### Hyprland-btw v0.4.3
 
 - Add: `wayle` Alternaive waybar option
