@@ -6,11 +6,16 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
-#### Hyprland-btw v0.4.4
+#### Hyprland-btw v0.4.5
 
-- Updated noctalia to v5.0.0 
-- Added systemd user service to start noctalia 
-- Updated keybinds for new version 
+- Changed `fastfetch` logo
+- Added `cliamp` and `shortwave`
+
+### Hyprland-btw v0.4.4
+
+- Updated noctalia to v5.0.0
+- Added systemd user service to start noctalia
+- Updated keybinds for new version
 
 #### Hyprland-btw v0.4.3
 
