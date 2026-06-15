@@ -13,6 +13,8 @@
 
     # Hyprland Related
     #app2unit # launcher
+    cliamp # TUI media player
+    shortwave # Internet radio
     clipman
     cliphist
     grim
