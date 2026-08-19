@@ -8,6 +8,7 @@
 
 #### Hyprland-btw v0.4.5
 
+- Added overlay for dwarfs/gearlever
 - Changed `fastfetch` logo
 - Added `cliamp` and `shortwave`
 - Fixed yazi startup and git errors
