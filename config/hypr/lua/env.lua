@@ -1,4 +1,4 @@
-hl.env("GTK_THEME", "Dracula")
+hl.env("GTK_THEME", "Adwaita:dark")
 hl.env("GTK_ICON_THEME", "Adwaita")
 hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
 hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")

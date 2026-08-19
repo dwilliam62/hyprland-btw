@@ -43,8 +43,8 @@ in {
     homeDirectory = lib.mkDefault "/home/dwilliams";
     stateVersion = "25.11";
     sessionVariables = {
-      # GTK_THEME = "Adwaita:dark";
-      GTK_THEME = "Dracula";
+      GTK_THEME = "Adwaita:dark";
+      #GTK_THEME = "Dracula";
     };
     packages = [
       rofiLegacyMenu
@@ -54,7 +54,6 @@ in {
       hyprlandChangeLayout
       hyprlandCycleWindow
       noctaliaMsg
-      pkgs.dracula-theme
     ];
   };
 
@@ -81,8 +80,7 @@ in {
       profileExtra = ''
         if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
           #exec uwsm start -S hyprland-uwsm.desktop
-          # export GTK_THEME=Adwaita:dark
-          export GTK_THEME=Dracula
+          export GTK_THEME=Adwaita:dark
           exec start-hyprland
         fi
       '';
@@ -118,18 +116,20 @@ in {
     };
   };
 
-  # Dracula theme configuration
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      gtk-theme = "Adwaita-dark";
+    };
+  };
+
+  # GTK theme configuration
   gtk = {
     enable = true;
     theme = {
-      name = "Dracula";
-      package = pkgs.dracula-theme;
-      #package = pkgs.tokyonight-gtk-theme;
-      #Dark (Blue Accent): "Tokyonight-Dark-B"
-      #Dark (Moon Accent): "Tokyonight-Dark-Moon"
-      #Storm (Gray/Muted Accent): "Tokyonight-Storm-B"
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
     };
-    # Optional: uncomment for Dracula icons
     iconTheme = {
       name = "al-beautyline";
     };
