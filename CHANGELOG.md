@@ -10,6 +10,7 @@
 
 - Changed `fastfetch` logo
 - Added `cliamp` and `shortwave`
+- Fixed yazi startup and git errors
 
 ### Hyprland-btw v0.4.4
 
