@@ -34,18 +34,12 @@
   in {
     nixosConfigurations.hyprland-btw = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = {inherit inputs;};
       modules = [
         {
           nixpkgs.config.allowUnfree = true;
-          nixpkgs.overlays = [
-            (final: prev: {
-              neovim = nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim;
-              neovim-unwrapped =
-                nixpkgs-stable.legacyPackages.${final.stdenv.hostPlatform.system}.neovim-unwrapped;
-              synfetch = inputs.synfetch.packages.${final.stdenv.hostPlatform.system}.default;
-            })
-          ];
         }
+        ./modules/overlays.nix
         ./configuration.nix
         ./config/nh.nix
         ./modules/drivers/default.nix
