@@ -31,37 +31,64 @@
     ...
   }: let
     system = "x86_64-linux";
+
+    # Generic host generator
+    mkHost = {
+      hostName,
+      hostPath ? ./hosts/${hostName},
+      userName ? "dwilliams",
+    }:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {inherit inputs hostName userName;};
+        modules = [
+          {
+            nixpkgs.config.allowUnfree = true;
+          }
+          ./modules/overlays.nix
+          ./configuration.nix
+          ./config/nh.nix
+          ./modules/drivers/default.nix
+          hostPath
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.${userName} = import ./home.nix;
+              backupFileExtension = "backup";
+              extraSpecialArgs = {inherit inputs hostName userName;};
+            };
+          }
+        ];
+      };
+
+    # Auto-discover all host subdirectories in ./hosts
+    hostsDir = ./hosts;
+    hostsAttr = builtins.readDir hostsDir;
+    discoveredHosts = builtins.attrNames (
+      nixpkgs.lib.filterAttrs (_name: type: type == "directory") hostsAttr
+    );
+
+    autoHosts = nixpkgs.lib.genAttrs discoveredHosts (hn: mkHost {hostName = hn;});
   in {
-    nixosConfigurations.hyprland-btw = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = {inherit inputs;};
-      modules = [
-        {
-          nixpkgs.config.allowUnfree = true;
-        }
-        ./modules/overlays.nix
-        ./configuration.nix
-        ./config/nh.nix
-        ./modules/drivers/default.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            # Default: supports the installer-configured user or default 'dwilliams'
-            # The installer patches this username when creating a new system
-            # For existing clones, add additional users below if needed
-            users."dwilliams" = import ./home.nix;
-            # To add another user, uncomment and adjust:
-            # users."username" = import ./home.nix;
-            backupFileExtension = "backup";
-            extraSpecialArgs = {inherit inputs;};
-          };
-        }
-      ];
-    };
+    nixosConfigurations =
+      autoHosts
+      // {
+        # Host aliases for compatibility with current hostname on the VM
+        "hyprland-btw" =
+          if builtins.hasAttr "vm" autoHosts
+          then autoHosts."vm"
+          else if builtins.hasAttr "default" autoHosts
+          then autoHosts."default"
+          else
+            mkHost {
+              hostName = "hyprland-btw";
+              hostPath = ./hosts/default;
+            };
+      };
 
     # Code formatter
-    formatter.x86_64-linux = alejandra.defaultPackage.x86_64-linux;
+    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
   };
 }

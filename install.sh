@@ -431,17 +431,13 @@ else
   echo -e "${GREEN}Primary username unchanged (${userName}); leaving users.users entries as-is.${NC}"
 fi
 
-# Update console keymap and XKB layout.
-sed -i "s|console.keyMap = \".*\";|console.keyMap = \"$consoleKeyMap\";|" ./configuration.nix
-sed -i "s|xserver.xkb.layout = \".*\";|xserver.xkb.layout = \"$keyboardLayout\";|" ./configuration.nix
-# Toggle VM guest services based on GPU profile.
-if [ "$GPU_PROFILE" = "vm" ]; then
-  sed -i "s|vm.guest-services.enable = .*;|vm.guest-services.enable = true;|" ./configuration.nix
-else
-  sed -i "s|vm.guest-services.enable = .*;|vm.guest-services.enable = false;|" ./configuration.nix
-fi
+# Create host directory under hosts/
+TARGET_HOST_DIR="./hosts/$hostName"
+mkdir -p "$TARGET_HOST_DIR"
+TARGET_HW="$TARGET_HOST_DIR/hardware.nix"
+OWNER_USER="${SUDO_USER:-${USER:-$(whoami)}}"
 
-# Enable the matching GPU driver module and disable the others.
+# Generate hosts/<hostname>/default.nix with GPU and driver configuration
 to_prime_busid() {
   local pci="$1" # e.g., 00:02.0
   local bus_hex="${pci%%:*}"
@@ -453,59 +449,106 @@ to_prime_busid() {
   local func_dec=$((16#$func_hex))
   echo "PCI:${bus_dec}:${dev_dec}:${func_dec}"
 }
+
+cat > "$TARGET_HOST_DIR/default.nix" <<EOF
+{pkgs, ...}: {
+  imports = [
+    ./hardware.nix
+  ];
+
+  networking.hostName = "$hostName";
+
+EOF
+
 case "$GPU_PROFILE" in
   amd)
-    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = true;|" ./configuration.nix
-    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = false;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = false;|" ./configuration.nix
+    cat >> "$TARGET_HOST_DIR/default.nix" <<EOF
+  drivers = {
+    amdgpu.enable = true;
+    intel.enable = false;
+    nvidia.enable = false;
+  };
+
+  vm.guest-services.enable = false;
+}
+EOF
     ;;
   intel)
-    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
-    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = true;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = false;|" ./configuration.nix
+    cat >> "$TARGET_HOST_DIR/default.nix" <<EOF
+  drivers = {
+    amdgpu.enable = false;
+    intel.enable = true;
+    nvidia.enable = false;
+  };
+
+  vm.guest-services.enable = false;
+}
+EOF
     ;;
   nvidia)
-    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
-    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = false;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = true;|" ./configuration.nix
+    cat >> "$TARGET_HOST_DIR/default.nix" <<EOF
+  drivers = {
+    amdgpu.enable = false;
+    intel.enable = false;
+    nvidia.enable = true;
+  };
+
+  vm.guest-services.enable = false;
+}
+EOF
     ;;
   hybrid)
-    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
-    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = true;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = true;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.prime.enable = .*;|drivers.nvidia.prime.enable = true;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.prime.offload.enable = .*;|drivers.nvidia.prime.offload.enable = true;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.prime.sync.enable = .*;|drivers.nvidia.prime.sync.enable = false;|" ./configuration.nix
     INTEL_PCI=$(lspci -nn | awk '/VGA|3D/ && /Intel/{print $1; exit}')
     NVIDIA_PCI=$(lspci -nn | awk '/VGA|3D/ && /NVIDIA/{print $1; exit}')
+    INTEL_BUSID="PCI:0:2:0"
+    NVIDIA_BUSID="PCI:1:0:0"
     if [ -n "$INTEL_PCI" ] && [ -n "$NVIDIA_PCI" ]; then
       INTEL_BUSID=$(to_prime_busid "$INTEL_PCI")
       NVIDIA_BUSID=$(to_prime_busid "$NVIDIA_PCI")
-      sed -i "s|drivers.nvidia.prime.intelBusId = \".*\";|drivers.nvidia.prime.intelBusId = \"${INTEL_BUSID}\";|" ./configuration.nix
-      sed -i "s|drivers.nvidia.prime.nvidiaBusId = \".*\";|drivers.nvidia.prime.nvidiaBusId = \"${NVIDIA_BUSID}\";|" ./configuration.nix
     else
-      echo -e "${YELLOW}Could not detect Intel/NVIDIA PCI IDs. Please set drivers.nvidia.prime.*BusId manually.${NC}"
+      echo -e "${YELLOW}Could not detect Intel/NVIDIA PCI IDs. Defaulting to PCI:0:2:0 and PCI:1:0:0.${NC}"
     fi
+
+    cat >> "$TARGET_HOST_DIR/default.nix" <<EOF
+  drivers = {
+    amdgpu.enable = false;
+    intel.enable = true;
+    nvidia = {
+      enable = true;
+      prime = {
+        enable = true;
+        offload.enable = false;
+        sync.enable = true;
+        intelBusId = "$INTEL_BUSID";
+        nvidiaBusId = "$NVIDIA_BUSID";
+      };
+    };
+  };
+
+  vm.guest-services.enable = false;
+}
+EOF
     ;;
   vm|*)
-    # VM / unknown: leave all hardware drivers disabled; virtio/VM driver is used.
-    sed -i "s|drivers.amdgpu.enable = .*;|drivers.amdgpu.enable = false;|" ./configuration.nix
-    sed -i "s|drivers.intel.enable = .*;|drivers.intel.enable = false;|" ./configuration.nix
-    sed -i "s|drivers.nvidia.enable = .*;|drivers.nvidia.enable = false;|" ./configuration.nix
+    cat >> "$TARGET_HOST_DIR/default.nix" <<EOF
+  drivers = {
+    amdgpu.enable = false;
+    intel.enable = false;
+    nvidia.enable = false;
+  };
+
+  vm.guest-services.enable = true;
+}
+EOF
     ;;
 esac
+chown -R "$OWNER_USER":"$OWNER_USER" "$TARGET_HOST_DIR" 2>/dev/null || true
 
-# Update flake.nix: rename the nixosConfigurations.<name> attribute to the chosen hostname
-sed -i -E 's|(nixosConfigurations\.)[A-Za-z0-9._-]+(\s*=)|\1'"$hostName"'\2|' ./flake.nix
-# Update flake.nix and home.nix to avoid hardcoded username.
-sed -i -E 's|users\."[^"]+"\s*=\s*import \./home\.nix;|users."'"$userName"'" = import ./home.nix;|' ./flake.nix
+# Update home.nix to avoid hardcoded username if modified
 sed -i -E 's|home\.username = lib\.mkDefault ".*";|home.username = lib.mkDefault '"\"$userName\""';|' ./home.nix
 sed -i -E 's|home\.homeDirectory = lib\.mkDefault "/home/.*";|home.homeDirectory = lib.mkDefault '"\"/home/$userName\""';|' ./home.nix
 
 print_header "Hardware Configuration"
-
-TARGET_HW="./hardware-configuration.nix"
-OWNER_USER="${SUDO_USER:-${USER:-$(whoami)}}"
 
 backup_if_exists() {
   if [ -f "$TARGET_HW" ]; then
@@ -609,6 +652,11 @@ else
 fi
 
 print_header "Running nixos-rebuild (boot)"
+
+# Ensure newly generated host files are staged for Nix Flake evaluation
+if command -v git &>/dev/null && [ -d .git ]; then
+  git add -A "$TARGET_HOST_DIR" 2>/dev/null || true
+fi
 
 FLAKE_TARGET="#${hostName}"
 if sudo nixos-rebuild boot --flake .${FLAKE_TARGET} --option accept-flake-config true --refresh; then

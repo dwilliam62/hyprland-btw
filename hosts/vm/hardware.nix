@@ -31,10 +31,6 @@
     options = ["rw" "bg" "soft" "tcp" "_netdev"];
   };
 
-  #swapDevices = [
-  #  {device = "/dev/disk/by-uuid/a6e9dd8b-6767-44f4-84fa-30d02d90d087";}
-  #];
-
   networking.useDHCP = lib.mkDefault true;
 
   security.sudo.wheelNeedsPassword = lib.mkForce false;

@@ -7,24 +7,34 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 ### Building and Deploying
 - **Build system toplevel (dry build / verification without switching):**
   ```bash
-  nix build .#nixosConfigurations.hyprland-btw.config.system.build.toplevel
+  # Current host automatically:
+  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel
+  # Or specific host (e.g. vm, xps15, default):
+  nix build .#nixosConfigurations.vm.config.system.build.toplevel
+  nix build .#nixosConfigurations.xps15.config.system.build.toplevel
   ```
 - **Apply configuration switch:**
   ```bash
-  sudo nixos-rebuild switch --flake .#hyprland-btw
+  # Automatically detects current hostname:
+  sudo nixos-rebuild switch --flake .
+  # Or explicitly specify host:
+  sudo nixos-rebuild switch --flake .#xps15
   ```
 - **Apply configuration on next boot (used by installer):**
   ```bash
-  sudo nixos-rebuild boot --flake .#hyprland-btw
+  sudo nixos-rebuild boot --flake .
   ```
 - **Test configuration without adding boot entry:**
   ```bash
-  sudo nixos-rebuild test --flake .#hyprland-btw
+  sudo nixos-rebuild test --flake .
   ```
 - **Apply using `nh` (Nix Helper):**
   ```bash
+  # Automatically builds and applies matching current hostname:
   nh os switch .
   nh os test .
+  # Or target specific host:
+  nh os switch . -H xps15
   ```
 
 ### Flake Checks and Maintenance
@@ -55,15 +65,24 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## High-Level Architecture & Structure
 
-This repository provides a single-host NixOS + Hyprland configuration managed as a Nix Flake with integrated Home Manager.
+This repository provides a multi-host NixOS + Hyprland configuration managed as a Nix Flake with integrated Home Manager.
 
 ```
 hyprland-btw/
-├── flake.nix                  # Flake entrypoint & inputs (nixpkgs, home-manager, nixvim, noctalia, alejandra)
-├── configuration.nix          # System-level NixOS configuration
-├── hardware-configuration.nix # Machine-specific hardware generation (imported by configuration.nix)
-├── home.nix                   # User-level Home Manager entrypoint for primary user ('dwilliams')
-├── install.sh                 # Provisioning script (hardware detection, config patching, build)
+├── flake.nix                  # Flake entrypoint & multi-host auto-discovery
+├── configuration.nix          # Base system-level NixOS configuration (inherited by all hosts)
+├── home.nix                   # User-level Home Manager entrypoint for primary user
+├── install.sh                 # Provisioning script (hardware detection, host generation, build)
+├── hosts/                     # Host-specific configurations
+│   ├── vm/                    # Virtual machine profile (hostname: vm / hyprland-btw)
+│   │   ├── default.nix        # VM driver and guest service settings
+│   │   └── hardware.nix       # QEMU / virtio / ext4 hardware configuration
+│   ├── xps15/                 # Dell XPS 15 laptop profile (hostname: xps15)
+│   │   ├── default.nix        # Intel/NVIDIA hybrid PRIME and laptop settings
+│   │   └── hardware.nix       # BTRFS / kernel params / Intel microcode
+│   └── default/               # Fallback template for generic installations
+│       ├── default.nix
+│       └── hardware.nix
 ├── modules/
 │   ├── drivers/               # Modular GPU & VM driver toggles (amd, intel, nvidia, vm-guest-services)
 │   └── overlays.nix           # Nixpkgs overlays (pinned Neovim from stable, synfetch, dwarfs hotfix)
@@ -86,18 +105,21 @@ hyprland-btw/
 
 ### Key Architectural Concepts
 
-1. **Flake & System Integration (`flake.nix` & `configuration.nix`)**
-   - The primary system target is `nixosConfigurations.hyprland-btw` on `x86_64-linux`.
-   - Home Manager is loaded as a NixOS module (`home-manager.nixosModules.home-manager`) rather than standalone, applying `useGlobalPkgs = true` and `useUserPackages = true`.
-   - `specialArgs = { inherit inputs; };` propagates flake inputs into system and Home Manager modules.
+1. **Multi-Host Auto-Discovery (`flake.nix` & `hosts/`)**
+   - Flake dynamically auto-discovers all subdirectories under `./hosts/` using `builtins.readDir` and exports corresponding `nixosConfigurations.<hostname>`.
+   - Running `nh os switch .` or `sudo nixos-rebuild switch --flake .` automatically queries the machine's current hostname and switches to that host's profile without specifying arguments.
+   - Fallback/alias `nixosConfigurations.hyprland-btw` points to `vm` to ensure legacy clones and VMs continue updating seamlessly.
 
-2. **Modular Driver Toggles (`modules/drivers/`)**
-   - GPU and VM drivers are configured via module flags in `configuration.nix`:
+2. **Shared Base & Per-Host Overrides (`configuration.nix` & `hosts/<hostname>/default.nix`)**
+   - Common configuration (desktop environment, base services, audio, display manager, user shell) lives in `configuration.nix`.
+   - Per-host drivers, unique services (e.g. `nix-ld` / `foldingathome`), and hardware definitions live in `hosts/<hostname>/`.
+
+3. **Modular Driver Toggles (`modules/drivers/`)**
+   - GPU and VM drivers are configured via module flags in each host's `default.nix`:
      - `drivers.amdgpu.enable = true|false;`
      - `drivers.intel.enable = true|false;`
      - `drivers.nvidia.enable = true|false;` (supports PRIME offload/sync settings)
      - `vm.guest-services.enable = true|false;` (QEMU/Spice guest agent)
-   - The single-host model expects exactly one primary GPU driver profile active (or VM guest services if virtualized).
 
 3. **Neovim & Package Overlays (`modules/overlays.nix`)**
    - Neovim is pinned to `nixpkgs-stable` (`nixos-25.05` channel) to prevent breaking changes from `nixpkgs-unstable`.
