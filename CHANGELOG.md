@@ -6,6 +6,11 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.0
+
+- Supports multiple hosts
+- Created HOWTO document
+
 #### Hyprland-btw v0.4.5
 
 - Added overlay for dwarfs/gearlever

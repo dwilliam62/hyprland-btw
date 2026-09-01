@@ -1,6 +1,9 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
-    ./hardware-configuration.nix
     ./config/fonts.nix
     ./config/packages.nix
     ./config/virtualization.nix #  Emable docker,podman,virtmgr
@@ -23,24 +26,20 @@
   };
 
   networking = {
-    hostName = "hyprland-btw";
+    hostName = lib.mkDefault "hyprland-btw";
     networkmanager.enable = true;
   };
 
   time.timeZone = "America/New_York";
 
-  # GPU/VM profile for this single-host system
-  # Current host: VM with virtio GPU (no dedicated AMD/Intel/NVIDIA module enabled).
-  # The installer will set exactly ONE of these to true based on your GPU profile:
+  # Default driver fallback (overridden per host in hosts/<hostname>/default.nix)
   drivers = {
-    amdgpu.enable = false; # AMD GPUs
-    intel.enable = false; # Intel iGPU
-    nvidia.enable = false; # NVIDIA GPUs
+    amdgpu.enable = lib.mkDefault false;
+    intel.enable = lib.mkDefault false;
+    nvidia.enable = lib.mkDefault false;
   };
 
-  # Enable VM guest services via the drivers module when running in a VM.
-  # Disable this if you are installing on bare metal without QEMU/Spice.
-  vm.guest-services.enable = true;
+  vm.guest-services.enable = lib.mkDefault false;
 
   # Add services
   services = {
