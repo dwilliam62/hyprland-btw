@@ -8,9 +8,10 @@
 
 #### Hyprland-btw v0.5.0
 
-- Supports multiple hosts
-- Created HOWTO document
-
+- Project now supports multiple hosts
+  - Migrated VM and XPS15 hosts
+  - Created document `HOWTO-Manage-Hosts.md`
+  - Added pre-flight systemd-machined fix in rebuild and update helper scripts
 #### Hyprland-btw v0.4.5
 
 - Added overlay for dwarfs/gearlever
