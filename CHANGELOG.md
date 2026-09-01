@@ -6,6 +6,12 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.0
+
+- Project now supports multiple hosts
+  - Migrated VM and XPS15 hosts
+  - Created document i`HOWTO-Manage-Hosts.md`
+
 #### Hyprland-btw v0.4.5
 
 - Added overlay for dwarfs/gearlever
