@@ -67,10 +67,6 @@ alias notes='$EDITOR ~/notes.txt'
 export PATH="/usr/sbin:$HOME/.local/bin/:$HOME/.emacs.d/bin:$PATH"
 
 alias ncg='nix-collect-garbage --delete-old && sudo nix-collect-garbage -d && sudo /run/current-system/bin/switch-to-configuration boot'
-#alias rebuild="sudo nixos-rebuild switch --flake ~/hyprland-btw"
-#alias update="nix flake update --flake ~/hyprland-btw && sudo nixos-rebuild switch --flake ~/hyprland-btw/"
-alias rebuild="nh os switch $HOME/hyprland-btw"
-alias update="nh os switch --update $HOME/hyprland-btw"
 alias cleanup="nh clean all"
 
 

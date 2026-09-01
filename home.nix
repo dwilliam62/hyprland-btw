@@ -12,6 +12,8 @@
   hyprlandChangeLayout = import ./config/scripts/hyprland-change-layout.nix {inherit pkgs;};
   hyprlandCycleWindow = import ./config/scripts/hyprland-cycle-window.nix {inherit pkgs;};
   noctaliaMsg = import ./config/scripts/noctalia-msg.nix {inherit pkgs;};
+  rebuildScript = import ./config/scripts/rebuild.nix {inherit pkgs;};
+  updateScript = import ./config/scripts/update.nix {inherit pkgs;};
 in {
   imports = [
     ./config/terminals/alacritty.nix
@@ -54,6 +56,8 @@ in {
       hyprlandChangeLayout
       hyprlandCycleWindow
       noctaliaMsg
+      rebuildScript
+      updateScript
     ];
   };
 
@@ -67,8 +71,6 @@ in {
       shellAliases = {
         ll = "eza -la --group-dirs-first --icons";
         v = "nvim";
-        rebuild = "sudo nixos-rebuild switch --flake ~/hyprland-btw/";
-        update = "nix flake update --flake ~/hyprland-btw && sudo nixos-rebuild switch --flake ~/hyprland-btw/";
       };
       # The block below is for commands that should run every time a terminal starts.
       initExtra = ''
