@@ -6,6 +6,12 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.1
+
+ - Noctalia from nixpkgs 
+ - Noctalia-greeter vs. ly 
+ - Removed some old pkgs 
+
 #### Hyprland-btw v0.5.0
 
 - Project now supports multiple hosts
