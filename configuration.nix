@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }: {
   imports = [
@@ -177,9 +178,27 @@
   };
 
   # Qt6 environment for quickshell
-  environment.sessionVariables = {
-    QT_QPA_PLATFORM = "wayland;xcb";
-    QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+  environment.sessionVariables =
+    {
+      QT_QPA_PLATFORM = "wayland;xcb";
+      QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+    }
+    // (lib.optionalAttrs (config.vm.guest-services.enable || config.drivers.nvidia.enable) {
+      WLR_NO_HARDWARE_CURSORS = "1";
+    });
+
+  # Fix upside-down / glitchy cursor in wlroots (noctalia-greeter) on VM or NVIDIA
+  environment.etc."environment".text = lib.mkIf (config.vm.guest-services.enable || config.drivers.nvidia.enable) ''
+    WLR_NO_HARDWARE_CURSORS=1
+  '';
+
+  systemd.services.greetd = lib.mkIf (config.vm.guest-services.enable || config.drivers.nvidia.enable) {
+    environment = {
+      WLR_NO_HARDWARE_CURSORS = "1";
+    };
+    serviceConfig = {
+      EnvironmentFile = ["-/etc/environment"];
+    };
   };
 
   nixpkgs.config.allowUnfree = true;

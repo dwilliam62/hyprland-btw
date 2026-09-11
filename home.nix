@@ -146,6 +146,23 @@ in {
     };
   };
 
+  # Desktop shortcut for Warp AppImage
+  xdg.desktopEntries.warp = {
+    name = "Warp";
+    genericName = "TerminalEmulator";
+    comment = "Warp Terminal";
+    exec = "env DESKTOPINTEGRATION=1 ${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage %U";
+    icon = "${config.home.homeDirectory}/AppImages/.icons/warp.png";
+    terminal = false;
+    categories = ["System" "TerminalEmulator"];
+    mimeType = ["x-scheme-handler/warp"];
+    settings = {
+      TryExec = "${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage";
+      StartupWMClass = "dev.warp.Warp";
+      Keywords = "shell;prompt;command;commandline;cmd;";
+    };
+  };
+
   # Seed wallpapers
   home.activation.seedWallpapers = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -eu

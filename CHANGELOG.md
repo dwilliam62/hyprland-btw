@@ -10,6 +10,9 @@
 
  - Noctalia from nixpkgs 
  - Noctalia-greeter vs. ly 
+    - set `WLR_NO_HARDWAR$E_CURSOR=1`
+        - For VM's and NVIDIA GPU profile 
+        - Otherwise mouse cursor upside down in greeeter
  - Removed some old pkgs 
 
 #### Hyprland-btw v0.5.0
