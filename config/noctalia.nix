@@ -1,11 +1,8 @@
 {
   pkgs,
-  inputs,
   lib,
   ...
 }: let
-  system = pkgs.stdenv.hostPlatform.system;
-  noctaliaPkg = inputs.noctalia.packages.${system}.default;
   noctaliaLauncher = pkgs.writeShellScript "noctalia-launcher" ''
     set -eu
 
@@ -37,11 +34,11 @@
     fi
 
     export WAYLAND_DISPLAY="$display"
-    exec ${noctaliaPkg}/bin/noctalia
+    exec ${pkgs.noctalia}/bin/noctalia
   '';
 in {
   home.packages = [
-    noctaliaPkg
+    pkgs.noctalia
     pkgs.gpu-screen-recorder
   ];
 

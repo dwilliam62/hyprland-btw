@@ -82,36 +82,23 @@
       };
     };
 
-    # ly display manager - disabled due to issues with user filtering
-    # This is disabled b/c ly won't mask the nixbld users
-    # Making it confusing for new users
-    # You can enable this and manually set to your username
-    displayManager.ly = {
-      enable = true;
-      settings = {
-        animation = "matrix";
-        bigclock = true;
-        bg = "0x00000000";
-        fg = "0x0000FFFF";
-        border_fg = "0x00FF0000";
-        error_fg = "0x00FF0000";
-        clock_color = "#800080";
-        min_uid = 1000;
-        max_uid = 2000;
-      };
-    };
+    # ly display manager (disabled)
+    displayManager.ly.enable = false;
 
-    # greetd with tuigreet - TUI display manager that properly hides system users
-    greetd = {
-      enable = false;
-      settings = rec {
-        initial_session = {
-          command = "${pkgs.tuigreet}/bin/tuigreet --cmd start-hyprland --user-menu";
-          user = "greeter";
-        };
-        default_session = initial_session;
-      };
-    };
+    # Noctalia Greeter (greetd) login manager
+    displayManager.noctalia-greeter.enable = true;
+
+    # greetd with tuigreet - TUI display manager alternative (disabled)
+    # greetd = {
+    #   enable = false;
+    #   settings = rec {
+    #     initial_session = {
+    #       command = "${pkgs.tuigreet}/bin/tuigreet --cmd start-hyprland --user-menu";
+    #       user = "greeter";
+    #     };
+    #     default_session = initial_session;
+    #   };
+    # };
   };
 
   programs = {

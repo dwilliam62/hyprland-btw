@@ -12,15 +12,12 @@
     xdg-desktop-portal-hyprland
 
     # Hyprland Related
-    #app2unit # launcher
     cliamp # TUI media player
     shortwave # Internet radio
     clipman
     cliphist
     grim
-    #quickshell
-    noctalia-shell
-    noctalia-qs
+    quickshell
     slurp
     nwg-look
     rofi
@@ -51,13 +48,13 @@
     coreutils
     #dino # Jabber XMPP Client
     direnv # needed for zsh plugin and vscode
-    #discord
+    discord
     #discord-canary
     fastfetch
     fd # better find used by emacs, etc
     foot
     #gajim # Japper XMPP client
-    gearlever # manage app iamges
+    #gearlever # manage app iamges
     gcc
     ghostty
     git
@@ -80,6 +77,7 @@
     ncdu # show diskusage
     nh # Nix Helper
     nixd # nix lsp
+    noctalia-greeter
     #nvtopPackages.full # nvtop all GPUs
     onefetch # git repo fetch
     #onlyoffice-desktopeditors
@@ -93,8 +91,7 @@
     ttop # resource monitor
     ugrep
     vlc # Video Player
-    #warp-terminal # AI and Terminal
-    wayle # Waybar alternative from hyprpanel devs
+    #wayle # Waybar alternative from hyprpanel devs
     wezterm # Terminal
     wget
     zenith # Btop/htop/bottom style monitor
