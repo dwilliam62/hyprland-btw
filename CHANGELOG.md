@@ -8,19 +8,21 @@
 
 #### Hyprland-btw v0.5.2
 
-- Removed old overrides: 
-  - dwarfs 
-  - neovim 
+- Added `mangowc`
+- Updated version to v0.5.2
+- Removed old overrides:
+  - dwarfs
+  - neovim
     - installed updated bugsvim config
 
 #### Hyprland-btw v0.5.1
 
- - Noctalia from nixpkgs 
- - Noctalia-greeter vs. ly 
-    - set `WLR_NO_HARDWAR$E_CURSOR=1`
-        - For VM's and NVIDIA GPU profile 
-        - Otherwise mouse cursor upside down in greeeter
- - Removed some old pkgs 
+- Noctalia from nixpkgs
+- Noctalia-greeter vs. ly
+  - set `WLR_NO_HARDWAR$E_CURSOR=1`
+    - For VM's and NVIDIA GPU profile
+    - Otherwise mouse cursor upside down in greeeter
+- Removed some old pkgs
 
 #### Hyprland-btw v0.5.0
 
@@ -28,6 +30,7 @@
   - Migrated VM and XPS15 hosts
   - Created document `HOWTO-Manage-Hosts.md`
   - Added pre-flight systemd-machined fix in rebuild and update helper scripts
+
 #### Hyprland-btw v0.4.5
 
 - Added overlay for dwarfs/gearlever

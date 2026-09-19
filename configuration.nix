@@ -109,6 +109,8 @@
       xwayland.enable = true;
       withUWSM = false;
     };
+    # Mango (mangowm) - alternative wlroots compositor session
+    mango.enable = true;
     appimage = {
       enable = true;
       binfmt = true;

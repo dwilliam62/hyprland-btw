@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# ==================================================
+#  MangoWC - (2026)
+#  Switch Tela icon theme colors
+# ==================================================
+
+set -euo pipefail
+
+COLORS=(
+    "black|Tela-black-dark"
+    "blue|Tela-blue-dark"
+    "brown|Tela-brown-dark"
+    "green|Tela-green-dark"
+    "grey|Tela-grey-dark"
+    "orange|Tela-orange-dark"
+    "pink|Tela-pink-dark"
+    "purple|Tela-purple-dark"
+    "red|Tela-red-dark"
+    "yellow|Tela-yellow-dark"
+    "manjaro|Tela-manjaro-dark"
+    "ubuntu|Tela-ubuntu-dark"
+    "dracula|Tela-dracula-dark"
+    "nord|Tela-nord-dark"
+    "standard|Tela-dark"
+)
+
+show_usage() {
+    echo "Usage: set-icons --<color>"
+    echo ""
+    echo "Available colors:"
+    for color_info in "${COLORS[@]}"; do
+        flag="${color_info%%|*}"
+        echo "  --${flag}"
+    done
+    echo ""
+    echo "Example: set-icons --blue"
+    exit 1
+}
+
+if [[ $# -eq 0 ]]; then
+    if ! command -v fzf &>/dev/null; then
+        echo "Error: fzf is not installed. Please provide a variant with --<color>"
+        show_usage
+    fi
+
+    FZF_LIST=()
+    for color_info in "${COLORS[@]}"; do
+        flag="${color_info%%|*}"
+        theme="${color_info##*|}"
+        FZF_LIST+=("${flag} (${theme})")
+    done
+
+    SELECTED=$(printf '%s\n' "${FZF_LIST[@]}" | fzf --prompt="Select icon variant: " --height=15 --reverse)
+    if [[ -z "${SELECTED}" ]]; then
+        exit 0
+    fi
+    COLOR_INPUT="${SELECTED%% *}"
+else
+    ARG="$1"
+    if [[ ! "${ARG}" =~ ^-- ]]; then
+        echo "Error: Argument must start with --"
+        show_usage
+    fi
+    COLOR_INPUT="${ARG#--}"
+fi
+
+ICON_THEME=""
+for color_info in "${COLORS[@]}"; do
+    flag="${color_info%%|*}"
+    theme="${color_info##*|}"
+    if [[ "${COLOR_INPUT}" == "${flag}" ]]; then
+        ICON_THEME="${theme}"
+        break
+    fi
+done
+
+if [[ -z "${ICON_THEME}" ]]; then
+    echo "Error: Unknown color '${COLOR_INPUT}'"
+    show_usage
+fi
+
+echo "Setting icon theme to: ${ICON_THEME}"
+
+if command -v gsettings &>/dev/null; then
+    gsettings set org.gnome.desktop.interface icon-theme "${ICON_THEME}" 2>/dev/null || true
+fi
+
+for gtk_dir in "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"; do
+    if [[ -f "${gtk_dir}/settings.ini" ]]; then
+        sed -i "s/^gtk-icon-theme-name=.*/gtk-icon-theme-name=${ICON_THEME}/" "${gtk_dir}/settings.ini" 2>/dev/null || true
+    fi
+done
+
+if [[ -f "$HOME/.config/qt6ct/qt6ct.conf" ]]; then
+    sed -i "s/^icon_theme=.*/icon_theme=${ICON_THEME}/" "$HOME/.config/qt6ct/qt6ct.conf" 2>/dev/null || true
+fi
+
+if [[ -f "$HOME/.config/qt5ct/qt5ct.conf" ]]; then
+    sed -i "s/^icon_theme=.*/icon_theme=${ICON_THEME}/" "$HOME/.config/qt5ct/qt5ct.conf" 2>/dev/null || true
+fi
+
+if command -v noctalia >/dev/null 2>&1; then
+    noctalia msg config-reload 2>/dev/null || noctalia msg reload 2>/dev/null || true
+fi
+
+echo "Icon theme set to ${ICON_THEME}!"
