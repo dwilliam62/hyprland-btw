@@ -9,6 +9,7 @@
 #### Hyprland-btw v0.5.2
 
 - Added `mangowc`
+  - Used config from mangowc project
 - Updated version to v0.5.2
 - Removed old overrides:
   - dwarfs
