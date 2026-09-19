@@ -6,6 +6,13 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.2
+
+- Removed old overrides: 
+  - dwarfs 
+  - neovim 
+    - installed updated bugsvim config
+
 #### Hyprland-btw v0.5.1
 
  - Noctalia from nixpkgs 

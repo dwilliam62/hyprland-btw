@@ -205,6 +205,37 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
   security.sudo.wheelNeedsPassword = true;
 
+  # Polkit configuration and pkexec setuid wrapper
+  security.polkit = {
+    enable = true;
+    enablePkexecWrapper = true;
+    extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (subject.isInGroup("wheel")) {
+          if (action.id == "org.noctalia.greeter.sync-appearance" ||
+              action.id == "org.freedesktop.systemd1.manage-units") {
+            return polkit.Result.YES;
+          }
+        }
+      });
+    '';
+  };
+
+  # Systemd user service for Hyprland Polkit Authentication Agent
+  systemd.user.services.hyprpolkitagent = {
+    description = "Hyprland Polkit Authentication Agent";
+    wantedBy = ["graphical-session.target"];
+    wants = ["graphical-session.target"];
+    after = ["graphical-session.target"];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
+      Restart = "on-failure";
+      RestartSec = 1;
+      TimeoutStopSec = 10;
+    };
+  };
+
   # Home Manager backup extension for conflicting files
   home-manager.backupFileExtension = "backup";
 

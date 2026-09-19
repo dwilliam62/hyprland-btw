@@ -8,6 +8,7 @@
     hypridle
     hyprlock
     hyprpicker
+    hyprpolkitagent
     libnotify # send alerts
     xdg-desktop-portal-hyprland
 

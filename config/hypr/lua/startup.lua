@@ -26,6 +26,7 @@ local startup_commands = {
   "hyprpaper",
   "qs -c overview",
   "noctalia",
+  "systemctl --user start hyprpolkitagent",
 }
 
 local function run_startup_commands()
