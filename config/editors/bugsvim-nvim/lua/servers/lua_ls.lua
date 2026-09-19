@@ -13,12 +13,13 @@ return function(capabilities)
     settings = {
       Lua = {
         diagnostics = {
-          globals = { 'vim' },
+          globals = { 'vim', 'hl' },
         },
         workspace = {
           library = {
             vim.fn.expand '$VIMRUNTIME/lua',
             vim.fn.expand '$XDG_CONFIG_HOME' .. '/nvim/lua',
+            vim.fn.expand '$HOME/.config/hypr',
           },
         },
       },

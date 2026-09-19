@@ -83,6 +83,7 @@ vim.opt.encoding = 'UTF-8' -- Use UTF-8 encoding
 vim.opt.wildmenu = true -- Enable command-line completion menu
 vim.opt.wildmode = 'longest:full,full' -- Completion mode for command-line
 vim.opt.wildignorecase = true -- Case-insensitive tab completion in commands
+vim.opt.showtabline = 2 -- Always show tabline (for buffers/tabs at top)
 
 -- Cursor Settings
 vim.opt.guicursor = {

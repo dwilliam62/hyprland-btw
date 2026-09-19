@@ -31,22 +31,32 @@ in {
     stylua
     ruff
     prettierd
+    prettier
     clang-tools # includes clang-format
     shfmt
     alejandra
+    jq # json/jsonc formatter fallback
 
     # Linters
     ruff
     eslint_d
     luajitPackages.luacheck
     cpplint
+    clippy # rust linter
 
     # Additional tools
     ripgrep
     fd
-    tree-sitter
+    tree-sitter # tree-sitter CLI for parser compilation
     git
-    gnumake
+    curl
+    gnumake # provides make/gmake used by LuaSnip build
+    pkg-config
+    luarocks
+    lazygit # Snacks.lazygit
+    bat
+    wl-clipboard
+    (python3.withPackages (ps: [ps.pynvim])) # python provider
   ];
 
   # Optional: Ensure directories and undo setup on first activation

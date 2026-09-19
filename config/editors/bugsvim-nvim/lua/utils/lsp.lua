@@ -23,6 +23,8 @@ M.on_attach = function(event)
   keymap("n", "<leader>cd", function() vim.diagnostic.open_float(nil, { scope = "cursor" }) end, opts("Cursor diagnostics"))
   keymap("n", "<leader>[d", function () vim.diagnostic.jump({count = -1}) end, opts("Previous diagnostic"))
   keymap("n", "<leader>]d", function () vim.diagnostic.jump({count = 1}) end, opts("Next diagnostic"))
+  keymap("n", "<leader>lh", vim.lsp.buf.hover, opts("Hover documentation"))
+  keymap("n", "<leader>ls", vim.lsp.buf.signature_help, opts("Signature help"))
   keymap("n", "K", vim.lsp.buf.hover, opts("Hover documentation"))
   -- stylua: ignore end
 
