@@ -25,7 +25,14 @@ end
 local startup_commands = {
   "hyprpaper",
   "qs -c overview",
-  "noctalia",
+  -- noctalia is started by the noctalia.service systemd user unit
+  -- (config/noctalia.nix), which waits for the Wayland socket and sets
+  -- the correct NOCTALIA_CONFIG_HOME/NOCTALIA_STATE_HOME for the WM.
+  -- Do NOT also exec it here: a raw instance launched before that env
+  -- setup races the systemd-managed one for noctalia's single-instance
+  -- lock, causing repeated "noctalia is already running" restarts and
+  -- an unpredictable winner (sometimes without the Hyprland-specific
+  -- config), which is why panels like Settings can behave oddly.
   "systemctl --user start hyprpolkitagent",
 }
 

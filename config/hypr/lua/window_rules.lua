@@ -618,6 +618,16 @@ apply_window_rule({
 })
 
 apply_window_rule({
+  name = "noctalia-settings",
+  match = {
+    class = "^(dev.noctalia.Noctalia)$",
+    title = "^(Noctalia Settings)$",
+  },
+  center = true,
+  float = true,
+})
+
+apply_window_rule({
   name = "Clapper",
   match = {
     class = "^(com.github.rafostar.Clapper)$",
