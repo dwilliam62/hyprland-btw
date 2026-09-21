@@ -44,10 +44,11 @@ local function dispatch(name, args)
 		end
 	end
 
-	if name == "exit" and hl.dsp and hl.dsp.exit then
-		return function()
-			hl.dispatch(hl.dsp.exit())
-		end
+	-- Logout: use the explicit hyprctl command so it reliably terminates the
+	-- compositor (and returns to the greetd/Noctalia greeter) regardless of the
+	-- Lua runtime's dispatcher support.
+	if name == "exit" then
+		return exec_cmd("hyprctl dispatch exit")
 	end
 
 	if name == "togglefloating" and hl.dsp and hl.dsp.window and hl.dsp.window.float then

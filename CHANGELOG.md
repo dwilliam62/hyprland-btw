@@ -8,6 +8,8 @@
 
 #### Hyprland-btw v0.5.2
 
+- Fixed hyprland logout issue 
+- Fixed mango not starting from login mgr
 - Added `mangowc`
   - Used config from mangowc project
 - Updated version to v0.5.2
