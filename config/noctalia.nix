@@ -80,11 +80,9 @@ in {
     pkgs.gpu-screen-recorder
   ];
 
-  # Ensure declarative v5 per-WM config directories exist
+  # Ensure mutable v5 per-WM state directories exist
   home.activation.ensureNoctaliaConfigDir = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -eu
-    mkdir -p "$HOME/.config/hypr/noctalia"
-    mkdir -p "$HOME/.config/mango/noctalia"
     mkdir -p "$HOME/.local/state/hypr/noctalia"
     mkdir -p "$HOME/.local/state/mango/noctalia"
   '';
