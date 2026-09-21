@@ -80,13 +80,11 @@ in {
          source ~/.bashrc-personal
         fi
       '';
-      profileExtra = ''
-        if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-          #exec uwsm start -S hyprland-uwsm.desktop
-          export GTK_THEME=Adwaita:dark
-          exec start-hyprland
-        fi
-      '';
+      # NOTE: Do not auto-start a compositor from profileExtra. greetd sources
+      # /etc/profile and $HOME/.profile before exec'ing the selected session
+      # command, so an `exec start-hyprland` here hijacks every login session
+      # (including Mango) and makes logout/login always land in Hyprland.
+      # Session selection is handled by the greetd/Noctalia greeter instead.
     };
 
     #  Enables seemless zoxide integration
