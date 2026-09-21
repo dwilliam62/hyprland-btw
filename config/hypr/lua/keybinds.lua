@@ -44,11 +44,10 @@ local function dispatch(name, args)
 		end
 	end
 
-	-- Logout: use the explicit hyprctl command so it reliably terminates the
-	-- compositor (and returns to the greetd/Noctalia greeter) regardless of the
-	-- Lua runtime's dispatcher support.
+	-- Logout: use session-logout so it reliably terminates the compositor
+	-- and returns to the greetd/Noctalia greeter.
 	if name == "exit" then
-		return exec_cmd("hyprctl dispatch exit")
+		return exec_cmd("session-logout")
 	end
 
 	if name == "togglefloating" and hl.dsp and hl.dsp.window and hl.dsp.window.float then
@@ -139,7 +138,7 @@ end
 bindd("SUPER", "Return", "Launch Terminal", "exec", "ghostty")
 bindd("SUPER SHIFT", "Return", "Launch Kitty", "exec", "kitty-bg")
 bindd("SUPER", "Q", "Close Active Window", "killactive", "")
-bindd("SUPER SHIFT", "Q", "Exit Hyprland", "exit", "")
+bindd("SUPER SHIFT", "Q", "Exit Hyprland", "exec", "session-logout")
 bindd("SUPER", "T", "Launch FIle Mgr", "exec", "thunar")
 bindd("SUPER", "space", "Toggle floating", "togglefloating", "")
 bindd("SUPER", "F", "Fullscreen (monitor)", "fullscreen", "1")

@@ -33,7 +33,13 @@
       exit 1
     fi
 
+    # Import active compositor and user environment from systemd manager
+    if command -v systemctl >/dev/null 2>&1; then
+      eval "$(systemctl --user show-environment 2>/dev/null | grep -E '^(PATH|USER|HYPRLAND_INSTANCE_SIGNATURE|XDG_CURRENT_DESKTOP|XDG_SESSION_DESKTOP|XDG_SESSION_TYPE|XDG_SESSION_ID)=' | sed 's/^/export /')"
+    fi
+
     export WAYLAND_DISPLAY="$display"
+    export PATH="${lib.makeBinPath [pkgs.systemd pkgs.procps pkgs.coreutils pkgs.hyprland pkgs.mango]}:$PATH"
     exec ${pkgs.noctalia}/bin/noctalia
   '';
 in {
@@ -42,13 +48,14 @@ in {
     pkgs.gpu-screen-recorder
   ];
 
-  # Ensure declarative v5 config directory exists
+  # Ensure declarative v5 config directory exists and configure session-logout
   home.activation.ensureNoctaliaConfigDir = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -eu
     DEST="$HOME/.config/noctalia"
-
-    if [ ! -d "$DEST" ]; then
-      $DRY_RUN_CMD mkdir -p "$DEST"
+    mkdir -p "$DEST"
+    SETTINGS="$DEST/settings.json"
+    if [ -f "$SETTINGS" ] && command -v ${pkgs.jq}/bin/jq >/dev/null 2>&1; then
+      ${pkgs.jq}/bin/jq 'if .sessionMenu?.powerOptions then .sessionMenu.powerOptions |= map(if .action == "logout" and (.command == "" or .command == null) then .command = "session-logout" else . end) else . end' "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
     fi
   '';
 
@@ -63,7 +70,6 @@ in {
       RestartSec = 2;
       TimeoutStopSec = 10;
       Environment = [
-        "XDG_CURRENT_DESKTOP=Hyprland"
         "XDG_SESSION_TYPE=wayland"
         "QT_QPA_PLATFORM=wayland;xcb"
       ];

@@ -12,6 +12,7 @@
   hyprlandChangeLayout = import ./config/scripts/hyprland-change-layout.nix {inherit pkgs;};
   hyprlandCycleWindow = import ./config/scripts/hyprland-cycle-window.nix {inherit pkgs;};
   noctaliaMsg = import ./config/scripts/noctalia-msg.nix {inherit pkgs;};
+  sessionLogout = import ./config/scripts/session-logout.nix {inherit pkgs;};
   rebuildScript = import ./config/scripts/rebuild.nix {inherit pkgs;};
   updateScript = import ./config/scripts/update.nix {inherit pkgs;};
 in {
@@ -57,6 +58,7 @@ in {
       hyprlandChangeLayout
       hyprlandCycleWindow
       noctaliaMsg
+      sessionLogout
       rebuildScript
       updateScript
     ];
