@@ -8,6 +8,8 @@ set +e
 
 # Project version
 export MANGO_DOTS_VERSION="0.1.0"
+export NOCTALIA_CONFIG_HOME="${HOME}/.config/mango"
+export NOCTALIA_STATE_HOME="${HOME}/.local/state/mango"
 
 # Configure software cursors only for NVIDIA or Virtual Machine environments
 is_vm_or_nvidia() {

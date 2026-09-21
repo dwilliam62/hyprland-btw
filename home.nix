@@ -147,17 +147,32 @@ in {
     };
   };
 
-  # Warp AppImage launcher entry.
+  # Warp AppImage launcher entry and wrapper.
   #
+  # ~/.local/bin/warp wraps the AppImage to strip stray %U/%u tokens that some
+  # desktop launchers forward literally, and provides a stable CLI command.
+  home.file.".local/bin/warp" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      # Strip any stray %U or %u passed by desktop launchers
+      args=()
+      for arg in "$@"; do
+        if [ "$arg" != "%U" ] && [ "$arg" != "%u" ]; then
+          args+=("$arg")
+        fi
+      done
+      exec "$HOME/AppImages/Warp-x86_64.AppImage" "''${args[@]}"
+    '';
+  };
+
   # Managed directly under XDG_DATA_HOME (~/.local/share/applications), which
   # takes precedence over XDG_DATA_DIRS. This is deliberate: the Warp AppImage
   # self-installs its own warp.desktop into ~/.local/share/applications and
   # rewrites it on launch, which can point the launcher at a stale/extracted
   # path. Owning the file declaratively (a read-only store symlink) stops that
-  # and pins the entry to the stable AppImage path, so replacing
+  # and pins the entry to the stable wrapper/AppImage path, so replacing
   # ~/AppImages/Warp-x86_64.AppImage with a new version keeps the menu working.
-  # NOTE: no `env DESKTOPINTEGRATION=1` prefix, so the AppImage does not try to
-  # re-integrate and the Exec is a plain absolute path any launcher can spawn.
   home.file.".local/share/applications/warp.desktop".text = ''
     [Desktop Entry]
     Type=Application
@@ -165,7 +180,7 @@ in {
     Name=Warp
     GenericName=TerminalEmulator
     Comment=Warp Terminal
-    Exec=${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage %U
+    Exec=${config.home.homeDirectory}/.local/bin/warp
     TryExec=${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage
     Icon=${config.home.homeDirectory}/AppImages/.icons/warp.png
     Terminal=false

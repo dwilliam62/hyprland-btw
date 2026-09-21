@@ -1,0 +1,58 @@
+[bar.default]
+center = ["screenshot", "workspaces", "caffeine"]
+end = ["clock", "date", "weather", "tray", "notifications", "clipboard", "volume", "control-center", "session"]
+margin_ends = 20
+scale = 1.25
+start = ["launcher", "wallpaper", "active_window", "audio_visualizer"]
+
+[location]
+auto_locate = true
+
+[shell]
+font_family = "DejaVu Sans"
+telemetry_enabled = true
+
+  [shell.panel]
+  transparency_mode = "soft"
+
+  [shell.session]
+  grid = false
+  grid_columns = 3
+
+  [[shell.session.actions]]
+  action = "lock"
+  command = ""
+  countdown_seconds = 0
+  enabled = true
+
+  [[shell.session.actions]]
+  action = "logout"
+  command = "session-logout"
+  countdown_seconds = 0
+  enabled = true
+
+  [[shell.session.actions]]
+  action = "suspend"
+  command = ""
+  countdown_seconds = 0
+  enabled = false
+
+  [[shell.session.actions]]
+  action = "reboot"
+  command = ""
+  countdown_seconds = 0
+  enabled = true
+
+  [[shell.session.actions]]
+  action = "shutdown"
+  command = ""
+  countdown_seconds = 0
+  enabled = true
+
+[theme]
+community_palette = "Catppuccin Lavender"
+source = "community"
+wallpaper_scheme = "m3-fruit-salad"
+
+[wallpaper]
+directory = "/home/dwilliams/Pictures/Wallpapers"

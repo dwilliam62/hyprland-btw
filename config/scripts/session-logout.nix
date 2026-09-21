@@ -17,6 +17,7 @@ pkgs.writeShellScriptBin "session-logout" ''
   if [ "$is_hyprland" -eq 1 ]; then
     echo "hl.dispatch(hl.dsp.exit())" | ${pkgs.hyprland}/bin/hyprctl repl >/dev/null 2>&1 || true
     ${pkgs.hyprland}/bin/hyprctl dispatch exit >/dev/null 2>&1 || true
+    ${pkgs.procps}/bin/pkill -u "''${USER:-$(${pkgs.coreutils}/bin/id -un)}" -x Hyprland 2>/dev/null || true
   fi
 
   # 2. Exit Mango cleanly
@@ -26,18 +27,15 @@ pkgs.writeShellScriptBin "session-logout" ''
     elif [ -x /run/current-system/sw/bin/mmsg ]; then
       /run/current-system/sw/bin/mmsg dispatch quit >/dev/null 2>&1 || true
     fi
+    ${pkgs.procps}/bin/pkill -u "''${USER:-$(${pkgs.coreutils}/bin/id -un)}" -x mango 2>/dev/null || true
   fi
 
   # 3. Terminate seat session via loginctl
   if command -v loginctl >/dev/null 2>&1; then
     cur_user="''${USER:-$(${pkgs.coreutils}/bin/id -un)}"
-    if [ -n "''${XDG_SESSION_ID:-}" ]; then
-      loginctl terminate-session "''$XDG_SESSION_ID" 2>/dev/null || true
-    fi
-    seat_sess=$(loginctl list-sessions --no-legend 2>/dev/null | awk -v u="''$cur_user" '($3==u || $2==u) && ($4=="seat0" || $5=="seat0"){print $1; exit}')
-    if [ -n "''$seat_sess" ]; then
-      loginctl terminate-session "''$seat_sess" 2>/dev/null || true
-    fi
+    for s in $(loginctl list-sessions --no-legend 2>/dev/null | awk -v u="''$cur_user" '($3==u || $2==u){print $1}'); do
+      loginctl terminate-session "''$s" 2>/dev/null || true
+    done
   fi
 
   # 4. Fallback process termination
