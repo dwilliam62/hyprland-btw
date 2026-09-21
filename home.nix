@@ -145,22 +145,33 @@ in {
     };
   };
 
-  # Desktop shortcut for Warp AppImage
-  xdg.desktopEntries.warp = {
-    name = "Warp";
-    genericName = "TerminalEmulator";
-    comment = "Warp Terminal";
-    exec = "env DESKTOPINTEGRATION=1 ${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage %U";
-    icon = "${config.home.homeDirectory}/AppImages/.icons/warp.png";
-    terminal = false;
-    categories = ["System" "TerminalEmulator"];
-    mimeType = ["x-scheme-handler/warp"];
-    settings = {
-      TryExec = "${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage";
-      StartupWMClass = "dev.warp.Warp";
-      Keywords = "shell;prompt;command;commandline;cmd;";
-    };
-  };
+  # Warp AppImage launcher entry.
+  #
+  # Managed directly under XDG_DATA_HOME (~/.local/share/applications), which
+  # takes precedence over XDG_DATA_DIRS. This is deliberate: the Warp AppImage
+  # self-installs its own warp.desktop into ~/.local/share/applications and
+  # rewrites it on launch, which can point the launcher at a stale/extracted
+  # path. Owning the file declaratively (a read-only store symlink) stops that
+  # and pins the entry to the stable AppImage path, so replacing
+  # ~/AppImages/Warp-x86_64.AppImage with a new version keeps the menu working.
+  # NOTE: no `env DESKTOPINTEGRATION=1` prefix, so the AppImage does not try to
+  # re-integrate and the Exec is a plain absolute path any launcher can spawn.
+  home.file.".local/share/applications/warp.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Version=1.0
+    Name=Warp
+    GenericName=TerminalEmulator
+    Comment=Warp Terminal
+    Exec=${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage %U
+    TryExec=${config.home.homeDirectory}/AppImages/Warp-x86_64.AppImage
+    Icon=${config.home.homeDirectory}/AppImages/.icons/warp.png
+    Terminal=false
+    Categories=System;TerminalEmulator;
+    Keywords=shell;prompt;command;commandline;cmd;
+    StartupWMClass=dev.warp.Warp
+    MimeType=x-scheme-handler/warp;
+  '';
 
   # Seed wallpapers
   home.activation.seedWallpapers = lib.hm.dag.entryAfter ["writeBoundary"] ''
