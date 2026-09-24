@@ -8,7 +8,13 @@
 
 #### Hyprland-btw v0.5.2
 
-- Fixed hyprland logout issue 
+- Fixed `install.sh`
+  - Detects GPU
+  - Hardened script
+  - Fixed host handling
+  - Updated docs
+- Fixed yazi config
+- Fixed hyprland logout issue
 - Fixed mango not starting from login mgr
 - Added `mangowc`
   - Used config from mangowc project
