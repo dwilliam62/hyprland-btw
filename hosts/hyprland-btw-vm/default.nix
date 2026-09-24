@@ -3,7 +3,7 @@
     ./hardware.nix
   ];
 
-  networking.hostName = "vm";
+  networking.hostName = "hyprland-btw-vm";
 
   drivers = {
     amdgpu.enable = false;

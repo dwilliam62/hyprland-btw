@@ -14,7 +14,7 @@ hyprland-btw/
 ├── configuration.nix          # Shared system configuration (audio, DE, shell, base packages)
 ├── home.nix                   # Shared user configuration (Hyprland, waybar, terminals, dotfiles)
 └── hosts/
-    ├── vm/                    # Virtual Machine profile (hostname: vm / hyprland-btw)
+    ├── hyprland-btw-vm/       # Virtual Machine profile (hostname: hyprland-btw-vm)
     │   ├── default.nix        # VM driver settings & guest services
     │   └── hardware.nix       # QEMU / virtio / ext4 hardware configuration
     ├── xps15/                 # Dell XPS 15 laptop profile (hostname: xps15)
@@ -131,7 +131,7 @@ nh os test .
 
 # Target a specific remote or alternate host profile:
 nh os switch . -H xps15
-nh os test . -H vm
+nh os test . -H hyprland-btw-vm
 ```
 
 ### Standard: Using `nixos-rebuild`
@@ -141,7 +141,7 @@ sudo nixos-rebuild switch --flake .
 
 # Explicitly target a host:
 sudo nixos-rebuild switch --flake .#xps15
-sudo nixos-rebuild switch --flake .#vm
+sudo nixos-rebuild switch --flake .#hyprland-btw-vm
 
 # Test without adding a boot entry:
 sudo nixos-rebuild test --flake .
@@ -157,7 +157,7 @@ To compile and verify a system closure without applying it:
 nix build ".#nixosConfigurations.$(hostname).config.system.build.toplevel"
 
 # Build specific host:
-nix build .#nixosConfigurations.vm.config.system.build.toplevel
+nix build .#nixosConfigurations.hyprland-btw-vm.config.system.build.toplevel
 nix build .#nixosConfigurations.xps15.config.system.build.toplevel
 ```
 
@@ -195,4 +195,4 @@ To update all packages across all hosts to their latest upstream channels:
 * **`error: attribute '<hostname>' missing`:**
   Check that the folder name in `./hosts/<hostname>` matches the output of `hostname` (or specify the host with `-H <name>` or `.#<name>`).
 * **Host Aliases:**
-  If a machine uses an alternate or legacy hostname (such as `hyprland-btw`), aliases can be maintained in the `nixosConfigurations` block inside `flake.nix`.
+  If a machine uses an alternate or legacy hostname (such as `hyprland-btw`), aliases can be maintained in the `nixosConfigurations` block inside `flake.nix`. The built-in `hyprland-btw` alias maps to `hyprland-btw-vm` and is only defined when no real `hosts/hyprland-btw` directory exists.

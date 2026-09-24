@@ -106,6 +106,24 @@ ensure_username() {
   done
 }
 
+# Hostnames must not collide with GPU profile / reserved names.
+RESERVED_HOSTNAMES=(amd intel nvidia hybrid vm)
+
+is_valid_hostname() {
+  # Simple RFC-1123-ish hostname: letters/digits/hyphen labels.
+  local h="$1"
+  [ -n "$h" ] || return 1
+  [[ "$h" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$ ]]
+}
+
+is_reserved_hostname() {
+  local h="$1" r
+  for r in "${RESERVED_HOSTNAMES[@]}"; do
+    if [ "${h,,}" = "$r" ]; then return 0; fi
+  done
+  return 1
+}
+
 print_failure_banner() {
   echo -e "${RED}╔═══════════════════════════════════════════════════════════════════════╗${NC}"
   echo -e "${RED}║         hyprland-btw installation failed during nixos-rebuild.        ║${NC}"
@@ -115,13 +133,44 @@ print_failure_banner() {
 }
 
 NONINTERACTIVE=0
+GPU_PROFILE_REQUESTED=""
+VALID_GPU_PROFILES=(amd intel nvidia hybrid vm)
+
+is_valid_gpu_profile() {
+  local p="$1" v
+  for v in "${VALID_GPU_PROFILES[@]}"; do
+    if [ "$v" = "$p" ]; then return 0; fi
+  done
+  return 1
+}
+
+select_gpu_profile() {
+  # Interactive selection menu; prints the chosen profile to stdout.
+  echo -e "${YELLOW}GPU could not be detected automatically.${NC}" >&2
+  echo -e "Please select your GPU profile:" >&2
+  local i=1 v
+  for v in "${VALID_GPU_PROFILES[@]}"; do
+    echo -e "  $i) $v" >&2
+    i=$((i + 1))
+  done
+  local choice
+  while true; do
+    read -rp "Enter choice [1-${#VALID_GPU_PROFILES[@]}]: " choice
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#VALID_GPU_PROFILES[@]}" ]; then
+      echo "${VALID_GPU_PROFILES[$((choice - 1))]}"
+      return 0
+    fi
+    echo "Please enter a number between 1 and ${#VALID_GPU_PROFILES[@]}." >&2
+  done
+}
 
 print_usage() {
   cat <<EOF
-Usage: $0 [--non-interactive]
+Usage: $0 [--non-interactive] [--gpu <profile>]
 
 Options:
   --non-interactive  Do not prompt; accept defaults and proceed automatically
+  --gpu <profile>    Explicitly set the GPU profile (amd|intel|nvidia|hybrid|vm)
 EOF
 }
 
@@ -130,6 +179,15 @@ while [ $# -gt 0 ]; do
     --non-interactive)
       NONINTERACTIVE=1
       shift 1
+      ;;
+    --gpu)
+      if [ $# -lt 2 ]; then
+        print_error "--gpu requires a profile argument"
+        print_usage
+        exit 1
+      fi
+      GPU_PROFILE_REQUESTED="$2"
+      shift 2
       ;;
     -h|--help)
       print_usage
@@ -168,62 +226,71 @@ fi
 
 # GPU profile detection (VM / amd / intel / nvidia), adapted from ddubsOS.
 GPU_PROFILE=""
-has_nvidia=false
-has_intel=false
-has_amd=false
-has_vm=false
 
-if lspci | grep -qi 'vga\|3d'; then
-  while read -r line; do
-    if   echo "$line" | grep -qi 'nvidia'; then
-      has_nvidia=true
-    elif echo "$line" | grep -qi 'amd'; then
-      has_amd=true
-    elif echo "$line" | grep -qi 'intel'; then
-      has_intel=true
-    elif echo "$line" | grep -qi 'virtio\|vmware'; then
-      has_vm=true
-    fi
-  done < <(lspci | grep -i 'vga\|3d')
-
-  if   $has_vm; then
-    GPU_PROFILE="vm"
-  elif $has_nvidia && $has_intel; then
-    GPU_PROFILE="hybrid"
-  elif $has_nvidia; then
-    GPU_PROFILE="nvidia"
-  elif $has_amd; then
-    GPU_PROFILE="amd"
-  elif $has_intel; then
-    GPU_PROFILE="intel"
+if [ -n "$GPU_PROFILE_REQUESTED" ]; then
+  # Explicit profile from --gpu always wins.
+  if ! is_valid_gpu_profile "$GPU_PROFILE_REQUESTED"; then
+    print_error "Invalid --gpu value '$GPU_PROFILE_REQUESTED'."
+    echo -e "Valid profiles: ${VALID_GPU_PROFILES[*]}"
+    exit 1
   fi
-fi
+  GPU_PROFILE="$GPU_PROFILE_REQUESTED"
+  echo -e "${GREEN}Using requested GPU profile: $GPU_PROFILE${NC}"
+else
+  has_nvidia=false
+  has_intel=false
+  has_amd=false
+  has_vm=false
 
-if [ -n "$GPU_PROFILE" ]; then
-  echo -e "${GREEN}Detected GPU profile: $GPU_PROFILE${NC}"
-  if [ $NONINTERACTIVE -eq 1 ]; then
-    echo -e "Non-interactive: accepting detected GPU profile"
-  else
-    read -p "Is this GPU profile correct? (Y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      echo -e "${YELLOW}GPU profile not confirmed. Falling back to manual selection.${NC}"
-      GPU_PROFILE=""
-    fi
-  fi
-fi
+  if lspci | grep -qi 'vga\|3d'; then
+    while read -r line; do
+      if   echo "$line" | grep -qi 'nvidia'; then
+        has_nvidia=true
+      elif echo "$line" | grep -qi 'amd'; then
+        has_amd=true
+      elif echo "$line" | grep -qi 'intel'; then
+        has_intel=true
+      elif echo "$line" | grep -qi 'virtio\|vmware'; then
+        has_vm=true
+      fi
+    done < <(lspci | grep -i 'vga\|3d')
 
-if [ -z "$GPU_PROFILE" ]; then
-  if [ $NONINTERACTIVE -eq 1 ]; then
-    GPU_PROFILE="vm"
-    echo -e "Non-interactive: defaulting GPU profile to $GPU_PROFILE"
-  else
-    echo -e "${YELLOW}Automatic GPU detection failed or no specific profile found.${NC}"
-    echo -e "Available GPU profiles: amd | intel | nvidia | hybrid | vm"
-    read -rp "Enter GPU profile [ vm ]: " GPU_PROFILE
-    if [ -z "$GPU_PROFILE" ]; then
+    # Prefer a real GPU over a virtual display when both are reported.
+    if   $has_nvidia && $has_intel; then
+      GPU_PROFILE="hybrid"
+    elif $has_nvidia; then
+      GPU_PROFILE="nvidia"
+    elif $has_amd; then
+      GPU_PROFILE="amd"
+    elif $has_intel; then
+      GPU_PROFILE="intel"
+    elif $has_vm; then
       GPU_PROFILE="vm"
     fi
+  fi
+
+  if [ -n "$GPU_PROFILE" ]; then
+    echo -e "${GREEN}Detected GPU profile: $GPU_PROFILE${NC}"
+    if [ $NONINTERACTIVE -eq 1 ]; then
+      echo -e "Non-interactive: accepting detected GPU profile"
+    else
+      read -p "Is this GPU profile correct? (Y/N): " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}GPU profile not confirmed. Falling back to manual selection.${NC}"
+        GPU_PROFILE="$(select_gpu_profile)"
+      fi
+    fi
+  else
+    # No recognized GPU (e.g. server BMC / ASPEED / Matrox, or no VGA|3D line).
+    # Never silently assume a VM; make the user choose instead.
+    if [ $NONINTERACTIVE -eq 1 ]; then
+      print_error "Could not auto-detect a GPU profile."
+      echo -e "Re-run with an explicit profile, e.g.: $0 --non-interactive --gpu nvidia"
+      echo -e "Valid profiles: ${VALID_GPU_PROFILES[*]}"
+      exit 1
+    fi
+    GPU_PROFILE="$(select_gpu_profile)"
   fi
 fi
 
@@ -269,10 +336,21 @@ else
   fi
 
   echo ""
-  read -rp "Enter hostname for this system [${defaultHostName}]: " hostName
-  if [ -z "$hostName" ]; then
-    hostName="$defaultHostName"
-  fi
+  while true; do
+    read -rp "Enter hostname for this system [${defaultHostName}]: " hostName
+    if [ -z "$hostName" ]; then
+      hostName="$defaultHostName"
+    fi
+    if ! is_valid_hostname "$hostName"; then
+      echo -e "${RED}Invalid hostname '$hostName'. Use letters, digits and '-' (no leading/trailing '-').${NC}"
+      continue
+    fi
+    if is_reserved_hostname "$hostName"; then
+      echo -e "${RED}Hostname '$hostName' is reserved (a GPU profile name). Choose another, e.g. '${defaultHostName}'.${NC}"
+      continue
+    fi
+    break
+  done
 
   echo ""
   read -rp "Enter primary username for this system [${defaultUserName}]: " userName
@@ -306,6 +384,17 @@ else
   if [ -z "$consoleKeyMap" ]; then
     consoleKeyMap="$keyboardLayout"
   fi
+fi
+
+# Validate the final hostname (covers the non-interactive default path).
+if ! is_valid_hostname "$hostName"; then
+  print_error "Invalid hostname '$hostName'. Use letters, digits and '-' (no leading/trailing '-')."
+  exit 1
+fi
+if is_reserved_hostname "$hostName"; then
+  print_error "Hostname '$hostName' is reserved (GPU profile name: ${RESERVED_HOSTNAMES[*]})."
+  echo -e "Choose a different hostname so it cannot collide with a GPU profile name."
+  exit 1
 fi
 
 print_header "User and Root Password Checks"

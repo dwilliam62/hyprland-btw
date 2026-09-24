@@ -70,11 +70,13 @@
   in {
     nixosConfigurations =
       autoHosts
-      // {
-        # Host aliases for compatibility with current hostname on the VM
+      // nixpkgs.lib.optionalAttrs (!builtins.hasAttr "hyprland-btw" autoHosts) {
+        # Legacy hostname alias for machines still called `hyprland-btw`
+        # (the VM is now named `hyprland-btw-vm`). Guarded so it can never
+        # shadow a real, auto-discovered hosts/hyprland-btw.
         "hyprland-btw" =
-          if builtins.hasAttr "vm" autoHosts
-          then autoHosts."vm"
+          if builtins.hasAttr "hyprland-btw-vm" autoHosts
+          then autoHosts."hyprland-btw-vm"
           else if builtins.hasAttr "default" autoHosts
           then autoHosts."default"
           else

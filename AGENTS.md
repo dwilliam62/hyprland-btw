@@ -9,8 +9,8 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
   ```bash
   # Current host automatically:
   nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel
-  # Or specific host (e.g. vm, xps15, default):
-  nix build .#nixosConfigurations.vm.config.system.build.toplevel
+  # Or specific host (e.g. hyprland-btw-vm, xps15, default):
+  nix build .#nixosConfigurations.hyprland-btw-vm.config.system.build.toplevel
   nix build .#nixosConfigurations.xps15.config.system.build.toplevel
   ```
 - **Apply configuration switch:**
@@ -57,8 +57,8 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 - **Run automated setup script:**
   ```bash
   ./install.sh
-  # Or non-interactive
-  ./install.sh --non-interactive
+  # Or non-interactive (specify the GPU profile if it cannot be auto-detected)
+  ./install.sh --non-interactive --gpu nvidia
   ```
 
 ---
@@ -74,7 +74,7 @@ hyprland-btw/
 ├── home.nix                   # User-level Home Manager entrypoint for primary user
 ├── install.sh                 # Provisioning script (hardware detection, host generation, build)
 ├── hosts/                     # Host-specific configurations
-│   ├── vm/                    # Virtual machine profile (hostname: vm / hyprland-btw)
+│   ├── hyprland-btw-vm/       # Virtual machine profile (hostname: hyprland-btw-vm)
 │   │   ├── default.nix        # VM driver and guest service settings
 │   │   └── hardware.nix       # QEMU / virtio / ext4 hardware configuration
 │   ├── xps15/                 # Dell XPS 15 laptop profile (hostname: xps15)
@@ -108,7 +108,7 @@ hyprland-btw/
 1. **Multi-Host Auto-Discovery (`flake.nix` & `hosts/`)**
    - Flake dynamically auto-discovers all subdirectories under `./hosts/` using `builtins.readDir` and exports corresponding `nixosConfigurations.<hostname>`.
    - Running `nh os switch .` or `sudo nixos-rebuild switch --flake .` automatically queries the machine's current hostname and switches to that host's profile without specifying arguments.
-   - Fallback/alias `nixosConfigurations.hyprland-btw` points to `vm` to ensure legacy clones and VMs continue updating seamlessly.
+   - A legacy `nixosConfigurations.hyprland-btw` alias maps to the VM host (`hyprland-btw-vm`) for machines still named `hyprland-btw`. It is only defined when no real `hosts/hyprland-btw` directory exists, so it can never shadow an auto-discovered host.
 
 2. **Shared Base & Per-Host Overrides (`configuration.nix` & `hosts/<hostname>/default.nix`)**
    - Common configuration (desktop environment, base services, audio, display manager, user shell) lives in `configuration.nix`.
