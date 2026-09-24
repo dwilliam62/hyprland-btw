@@ -6,12 +6,12 @@
       fira-code-symbols
       font-awesome
       hackgen-nf-font
-      ibm-plex
-      inter
+      # ibm-plex
+      # inter
       jetbrains-mono
       material-icons
       maple-mono.NF
-      minecraftia
+      #minecraftia
       nerd-fonts.im-writing
       nerd-fonts.blex-mono
       noto-fonts
