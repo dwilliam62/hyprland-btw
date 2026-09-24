@@ -7,6 +7,7 @@
 set +e
 
 # Project version
+export HYPRBTW="0.5.3"
 export MANGO_DOTS_VERSION="0.1.0"
 export NOCTALIA_CONFIG_HOME="${HOME}/.config/mango"
 export NOCTALIA_STATE_HOME="${HOME}/.local/state/mango"
@@ -40,10 +41,10 @@ fi
 
 # Import environment for systemd user session & D-Bus
 if command -v systemctl >/dev/null 2>&1; then
-  systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE MANGO_DOTS_VERSION MANGO_INSTANCE_SIGNATURE WLR_NO_HARDWARE_CURSORS
+  systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE HYPRBTW MANGO_DOTS_VERSION MANGO_INSTANCE_SIGNATURE WLR_NO_HARDWARE_CURSORS
 fi
 if command -v dbus-update-activation-environment >/dev/null 2>&1; then
-  dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE MANGO_DOTS_VERSION MANGO_INSTANCE_SIGNATURE WLR_NO_HARDWARE_CURSORS
+  dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE HYPRBTW MANGO_DOTS_VERSION MANGO_INSTANCE_SIGNATURE WLR_NO_HARDWARE_CURSORS
 fi
 
 # Stop competing Hyprland background daemons that fail under Mango
