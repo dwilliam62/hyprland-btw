@@ -190,9 +190,11 @@
     });
 
   # Fix upside-down / glitchy cursor in wlroots (noctalia-greeter) on VM or NVIDIA
-  environment.etc."environment".text = lib.mkIf (config.vm.guest-services.enable || config.drivers.nvidia.enable) ''
-    WLR_NO_HARDWARE_CURSORS=1
-  '';
+  environment.etc = lib.mkIf (config.vm.guest-services.enable || config.drivers.nvidia.enable) {
+    "environment".text = ''
+      WLR_NO_HARDWARE_CURSORS=1
+    '';
+  };
 
   systemd.services.greetd = lib.mkIf (config.vm.guest-services.enable || config.drivers.nvidia.enable) {
     environment = {
