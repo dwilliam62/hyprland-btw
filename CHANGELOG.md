@@ -6,7 +6,7 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
-#### Hyprland-btw v0.5.2
+#### Hyprland-btw v0.5.3
 
 - Fixed `install.sh`
   - Detects GPU
@@ -14,6 +14,9 @@
   - Fixed host handling
   - Updated docs
 - Fixed yazi config
+
+#### Hyprland-btw v0.5.2
+
 - Fixed hyprland logout issue
 - Fixed mango not starting from login mgr
 - Added `mangowc`
