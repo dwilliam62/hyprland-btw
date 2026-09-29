@@ -167,25 +167,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-<<<<<<< HEAD
-        "lastModified": 1790361504,
-        "narHash": "sha256-s1k+HBVKC2tU/0CGYEuFGmGLlh2bNRRzNorrgRA4Jn8=",
-||||||| parent of c365538 (Updated flake)
-        "lastModified": 1790178388,
-        "narHash": "sha256-kK3t7gwoz4Nx8RF46cs1Xz/skKNcK7y3KYP+gGqX6W8=",
-=======
         "lastModified": 1790510107,
         "narHash": "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0=",
->>>>>>> c365538 (Updated flake)
         "owner": "nixos",
         "repo": "nixpkgs",
-<<<<<<< HEAD
-        "rev": "79b6d20e55596f80baa35cda2a334da8a1fbf1ea",
-||||||| parent of c365538 (Updated flake)
-        "rev": "00455b0a3690d3f5dc61e9aef4277dc86235b73f",
-=======
         "rev": "3181085bfd08663b6b9e60bc7a8395c2aaa741bd",
->>>>>>> c365538 (Updated flake)
         "type": "github"
       },
       "original": {
