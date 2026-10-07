@@ -137,7 +137,9 @@ Below you can expand each Nix file to view its full contents.
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, nixvim, noctalia, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, nixvim, noctalia, ... }: let
+    userCfg = import ./user.nix;
+  in {
     nixosConfigurations.hyprland-btw = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
@@ -148,9 +150,9 @@ Below you can expand each Nix file to view its full contents.
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users."dwilliams" = import ./home.nix;
+            users.${userCfg.userName} = import ./home.nix;
             backupFileExtension = "backup";
-            extraSpecialArgs = { inherit inputs; };
+            extraSpecialArgs = { inherit inputs; userName = userCfg.userName; };
           };
         }
       ];
