@@ -167,7 +167,7 @@ Below you can expand each Nix file to view its full contents.
 
 ```nix
 
-{ pkgs, ... }:
+{ pkgs, userName, ... }:
 
 {
   imports =
@@ -252,8 +252,8 @@ Below you can expand each Nix file to view its full contents.
   # Default console keymap (overridden by installer).
   console.keyMap = "us";
 
-  # Define the primary user account. Don't forget to set a password with ‘passwd’.
-  users.users."dwilliams" = {
+  # Define the primary user account (name comes from ./user.nix).
+  users.users.${userName} = {
     isNormalUser = true;
     extraGroups = [ "wheel" "input" ]; # Enable ‘sudo’ for the user.
     shell = pkgs.zsh; # default login shell
@@ -303,7 +303,7 @@ Below you can expand each Nix file to view its full contents.
 
 ```nix
 
-{ config, pkgs, inputs, lib, ... }:
+{ config, pkgs, inputs, lib, userName, ... }:
 
 let
   rofiLegacyMenu = import ./config/scripts/rofi-legacy.menu.nix { inherit pkgs; };
@@ -324,8 +324,8 @@ in
     ./config/yazi/default.nix
   ];
   home = {
-    username = lib.mkDefault "dwilliams";
-    homeDirectory = lib.mkDefault "/home/dwilliams";
+    username = lib.mkDefault userName;
+    homeDirectory = lib.mkDefault "/home/${userName}";
     stateVersion = "25.11";
     sessionVariables = {
       # GTK_THEME = "Adwaita:dark";

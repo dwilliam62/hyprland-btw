@@ -3,6 +3,7 @@
   pkgs,
   inputs,
   lib,
+  userName,
   ...
 }: let
   rofiLegacyMenu = import ./config/scripts/rofi-legacy.menu.nix {inherit pkgs;};
@@ -43,8 +44,8 @@ in {
     ######################################################################
   ];
   home = {
-    username = lib.mkDefault "dwilliams";
-    homeDirectory = lib.mkDefault "/home/dwilliams";
+    username = lib.mkDefault userName;
+    homeDirectory = lib.mkDefault "/home/${userName}";
     stateVersion = "25.11";
     sessionVariables = {
       GTK_THEME = "Adwaita:dark";
@@ -209,7 +210,17 @@ in {
   home.file.".local/share/icons/al-beautyline".source = ./config/local.icons/al-beautyline;
 
   # Config apps
-  home.file.".config/hypr".source = ./config/hypr;
+  # recursive so the generated Noctalia config below can coexist with the
+  # symlinked tree (a plain directory symlink cannot be written into).
+  home.file.".config/hypr" = {
+    source = ./config/hypr;
+    recursive = true;
+  };
+  # Noctalia config with the real home directory substituted for @HOME@.
+  home.file.".config/hypr/noctalia/config.toml".source =
+    pkgs.replaceVars ./config/noctalia/noctalia-config.toml {
+      HOME = config.home.homeDirectory;
+    };
   home.file.".config/waybar".source = ./config/waybar;
   home.file.".config/fastfetch".source = ./config/fastfetch;
   home.file.".config/foot".source = ./config/terminals/foot;

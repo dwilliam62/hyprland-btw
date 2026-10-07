@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  userName,
   ...
 }: {
   imports = [
@@ -136,7 +137,8 @@
   console.keyMap = "us";
 
   # Define the primary user account. Don't forget to set a password with ‘passwd’.
-  users.users."dwilliams" = {
+  # The username comes from ./user.nix (written by install.sh) via the flake.
+  users.users.${userName} = {
     isNormalUser = true;
     extraGroups = ["wheel" "input" "docker" "video" "libvirtd"]; # Enable ‘sudo’ for the user.
     shell = pkgs.zsh; # default login shell

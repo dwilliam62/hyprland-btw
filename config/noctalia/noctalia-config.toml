@@ -55,4 +55,4 @@ source = "community"
 wallpaper_scheme = "m3-fruit-salad"
 
 [wallpaper]
-directory = "/home/dwilliams/Pictures/Wallpapers"
+directory = "@HOME@/Pictures/Wallpapers"

@@ -462,63 +462,12 @@ else
   echo -e "${GREEN}No additional existing human users detected to preserve.${NC}"
 fi
 
-# Patch configuration.nix with chosen timezone, hostname, username, layouts, and VM profile.
+# Patch configuration.nix with the chosen timezone and hostname.
+# The primary username is written to ./user.nix below and consumed by
+# flake.nix, so configuration.nix no longer hardcodes a user entry.
 sed -i -E 's|(^\s*time\.timeZone\s*=\s*\").*(\";)|\1'"$timeZone"'\2|' ./configuration.nix
 # configuration.nix defines hostName inside the networking attrset (not networking.hostName = ...)
 sed -i -E 's|(^\s*hostName\s*=\s*\").*(\";)|\1'"$hostName"'\2|' ./configuration.nix
-
-# Determine the currently-declared primary user in configuration.nix
-CURRENT_DECLARED_USER=$(sed -n -E 's/.*users\.users\."([^"]+)"\s*=\s*\{.*/\1/p' ./configuration.nix | head -n1 || true)
-if [ -z "$CURRENT_DECLARED_USER" ]; then
-  CURRENT_DECLARED_USER="dwilliams"
-fi
-
-# If the chosen username differs, do NOT rename the existing user entry.
-# Instead, add a new users.users block for the new primary user and force users.mutableUsers = true.
-if [ "$userName" != "$CURRENT_DECLARED_USER" ]; then
-  echo -e "${YELLOW}Primary user changed: ${CURRENT_DECLARED_USER} -> ${userName}. Adding new user entry and keeping existing users.${NC}"
-  # Ensure users.mutableUsers = true so undeclared users are not removed.
-  if grep -qE '\busers\.mutableUsers\b' ./configuration.nix; then
-    sed -i 's|users\.mutableUsers = .*;|users.mutableUsers = true;|' ./configuration.nix
-  else
-    sed -i '/nix\.settings\.experimental-features/a\  users.mutableUsers = true;' ./configuration.nix
-  fi
-  # Only add a new entry if it doesn't already exist
-  if ! grep -qE "users\.users\\.\"${userName}\"\s*=\s*\{" ./configuration.nix; then
-    # Insert a minimal user definition after the existing primary user block
-    awk -v newuser="$userName" '
-      BEGIN{added=0}
-      {
-        print $0
-        if(!added && $0 ~ /users\.users\."([^"]+)"\s*=\s*\{/){
-          # Wait until we hit the closing brace of that block
-          inblk=1
-        }
-        if(inblk && $0 ~ /^\s*};\s*$/){
-          print "\n  users.users.\"" newuser "\" = {";
-          print "    isNormalUser = true;";
-          print "    extraGroups = [ \"wheel\" \"input\" ];";
-          print "    home = \"/home/" newuser "\";";
-          print "    createHome = true;";
-          print "    shell = pkgs.zsh;";
-          print "  };\n";
-          added=1; inblk=0
-        }
-      }
-      END{ if(!added){
-        print "\n  users.users.\"" newuser "\" = {";
-        print "    isNormalUser = true;";
-        print "    extraGroups = [ \"wheel\" \"input\" ];";
-        print "    home = \"/home/" newuser "\";";
-        print "    createHome = true;";
-        print "    shell = pkgs.zsh;";
-        print "  };";
-      }}
-    ' ./configuration.nix > ./configuration.nix.tmp && mv ./configuration.nix.tmp ./configuration.nix
-  fi
-else
-  echo -e "${GREEN}Primary username unchanged (${userName}); leaving users.users entries as-is.${NC}"
-fi
 
 # Create host directory under hosts/
 TARGET_HOST_DIR="./hosts/$hostName"
@@ -633,9 +582,16 @@ EOF
 esac
 chown -R "$OWNER_USER":"$OWNER_USER" "$TARGET_HOST_DIR" 2>/dev/null || true
 
-# Update home.nix to avoid hardcoded username if modified
-sed -i -E 's|home\.username = lib\.mkDefault ".*";|home.username = lib.mkDefault '"\"$userName\""';|' ./home.nix
-sed -i -E 's|home\.homeDirectory = lib\.mkDefault "/home/.*";|home.homeDirectory = lib.mkDefault '"\"/home/$userName\""';|' ./home.nix
+# Write the primary username to ./user.nix. flake.nix reads this file and
+# threads `userName` into configuration.nix (system user) and home.nix
+# (Home Manager profile), so nothing else hardcodes the username.
+cat > ./user.nix <<EOF
+{
+  userName = "$userName";
+}
+EOF
+chown "$OWNER_USER":"$OWNER_USER" ./user.nix 2>/dev/null || true
+echo -e "${GREEN}Wrote ./user.nix with primary username '$userName'${NC}"
 
 print_header "Hardware Configuration"
 
@@ -744,7 +700,7 @@ print_header "Running nixos-rebuild (boot)"
 
 # Ensure newly generated host files are staged for Nix Flake evaluation
 if command -v git &>/dev/null && [ -d .git ]; then
-  git add -A "$TARGET_HOST_DIR" 2>/dev/null || true
+  git add -A "$TARGET_HOST_DIR" ./user.nix 2>/dev/null || true
 fi
 
 FLAKE_TARGET="#${hostName}"

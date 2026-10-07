@@ -28,11 +28,15 @@
   }: let
     system = "x86_64-linux";
 
+    # Single source of truth for the primary username. install.sh rewrites
+    # ./user.nix with the username chosen at install time.
+    userCfg = import ./user.nix;
+
     # Generic host generator
     mkHost = {
       hostName,
       hostPath ? ./hosts/${hostName},
-      userName ? "dwilliams",
+      userName ? userCfg.userName,
     }:
       nixpkgs.lib.nixosSystem {
         inherit system;

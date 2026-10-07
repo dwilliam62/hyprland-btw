@@ -6,6 +6,23 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.4
+
+- Made the primary username configurable
+  - Added `user.nix` as the single source of truth for the username
+  - `flake.nix` reads `user.nix` and threads `userName` into `configuration.nix` and `home.nix`
+  - `configuration.nix` now declares `users.users.${userName}` instead of a hardcoded user
+  - `home.nix` derives `home.username` and `home.homeDirectory` from `userName`
+- Fixed `install.sh`
+  - Writes the chosen username to `user.nix` (no more sed patching `home.nix`)
+  - Removed the logic that appended a second `users.users` block
+  - Stages `user.nix` before `nixos-rebuild` so the flake sees it
+- Made the Noctalia wallpaper path home-relative
+  - Added `config/noctalia/noctalia-config.toml` using an `@HOME@` placeholder
+  - Hyprland deploys it via `replaceVars`; Mango substitutes `$HOME` on activation
+  - Removed the duplicate `noctalia/config.toml` files and the hardcoded `/home/dwilliams` paths
+- Updated `README.md` snippets for the dynamic username
+
 #### Hyprland-btw v0.5.3
 
 - Fixed `install.sh`

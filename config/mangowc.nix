@@ -5,6 +5,9 @@
 }: let
   # Reference the local Mango config directory in this repo
   mangowcSrc = ./mangowc;
+  # Shared Noctalia config template; @HOME@ is substituted at activation so
+  # the wallpaper path follows the real home directory.
+  noctaliaConfig = ./noctalia/noctalia-config.toml;
 in {
   # Mango (mangowm) compositor configuration.
   # Deployed as real (writable) files because the upstream helper scripts
@@ -24,6 +27,12 @@ in {
 
     # Mango reads ~/.config/mango/config.conf; link it to the mangowc config dir
     $DRY_RUN_CMD ln -sfn mangowc "$HOME/.config/mango"
+
+    # Deploy the Noctalia config with the real home directory substituted in.
+    $DRY_RUN_CMD mkdir -p "$HOME/.config/mangowc/noctalia"
+    $DRY_RUN_CMD cp ${noctaliaConfig} "$HOME/.config/mangowc/noctalia/config.toml"
+    $DRY_RUN_CMD chmod u+w "$HOME/.config/mangowc/noctalia/config.toml"
+    $DRY_RUN_CMD sed -i "s|@HOME@|$HOME|g" "$HOME/.config/mangowc/noctalia/config.toml"
   '';
 
   # polkit-gnome is the Mango-compatible polkit authentication agent used by
