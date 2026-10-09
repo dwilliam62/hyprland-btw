@@ -39,17 +39,59 @@ local function parse_resize_delta(value)
 	return tonumber(x), tonumber(y)
 end
 
-local function active_window_size()
-	if not hl.get_active_window then
-		return nil, nil
-	end
-	local window = hl.get_active_window()
+local function window_size(window)
 	if not window or not window.size then
 		return nil, nil
 	end
 	local width = tonumber(window.size.x or window.size[1])
 	local height = tonumber(window.size.y or window.size[2])
 	return width, height
+end
+
+-- Hyprland 0.56 dropped the legacy `resizeactive` dispatcher, and the Lua
+-- replacement has no delta form (`exact = false` is ignored): the value passed
+-- to hl.dsp.window.resize() is read as a *delta* against the current size.
+--
+-- For a tiled window that delta is applied to the split ratio, and when the
+-- window is the second child of a split the ratio is anchored on its sibling,
+-- so the delta is applied with the opposite sign:
+--     new = 2 * current - requested
+-- which makes SUPER SHIFT + up grow the window instead of shrinking it. The
+-- direction is therefore measured after the first dispatch and, when it is
+-- wrong, the request is mirrored to land exactly on the target.
+local function resize_active_by(dx, dy)
+	if not hl.dsp or not hl.dsp.window or not hl.dsp.window.resize then
+		return
+	end
+	local start_w, start_h = window_size(hl.get_active_window and hl.get_active_window())
+	if not start_w or not start_h then
+		return
+	end
+
+	local target_w = math.max(1, start_w + dx)
+	local target_h = math.max(1, start_h + dy)
+	hl.dispatch(hl.dsp.window.resize({x = target_w, y = target_h, exact = true}))
+
+	local now_w, now_h = window_size(hl.get_active_window and hl.get_active_window())
+	if not now_w or not now_h then
+		return
+	end
+
+	-- A zero delta or an unchanged size (for example a vertical resize with no
+	-- vertical split) is not something a correction can fix.
+	local wrong_x = dx ~= 0 and now_w ~= start_w and ((now_w > start_w) ~= (dx > 0))
+	local wrong_y = dy ~= 0 and now_h ~= start_h and ((now_h > start_h) ~= (dy > 0))
+	if not (wrong_x or wrong_y) then
+		return
+	end
+
+	local fix_w = wrong_x and (2 * now_w - target_w) or target_w
+	local fix_h = wrong_y and (2 * now_h - target_h) or target_h
+	hl.dispatch(hl.dsp.window.resize({
+		x = math.max(1, fix_w),
+		y = math.max(1, fix_h),
+		exact = true,
+	}))
 end
 
 local function dispatch(name, args)
@@ -120,22 +162,14 @@ local function dispatch(name, args)
 
 	-- Hyprland 0.56 evaluates the argument of `hyprctl dispatch` as Lua, so the
 	-- legacy bare-word form ("hyprctl dispatch resizeactive -40 0") is rejected
-	-- and the bind silently does nothing. resizeactive/resizewindow therefore go
-	-- through hl.dsp.window.resize(), which takes an *absolute* size.
+	-- and the bind silently does nothing.
 	if (name == "resizeactive" or name == "resizewindow")
 		and hl.dsp and hl.dsp.window and hl.dsp.window.resize
 	then
 		local dx, dy = parse_resize_delta(args)
 		if dx and dy then
 			return function()
-				local current_w, current_h = active_window_size()
-				if not current_w or not current_h then
-					return
-				end
-				hl.dispatch(hl.dsp.window.resize({
-					x = math.max(1, current_w + dx),
-					y = math.max(1, current_h + dy),
-				}))
+				resize_active_by(dx, dy)
 			end
 		end
 		return function()
