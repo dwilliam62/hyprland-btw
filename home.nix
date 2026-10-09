@@ -209,6 +209,26 @@ in {
   # Link local icon theme
   home.file.".local/share/icons/al-beautyline".source = ./config/local.icons/al-beautyline;
 
+  # Migrate away from the legacy layout where ~/.config/hypr was a
+  # whole-directory symlink into the read-only Nix store. The declaration below
+  # uses `recursive = true`, which needs a real, writable directory at
+  # ~/.config/hypr. If the stale symlink is left in place, Home Manager's link
+  # generation traverses it into the store and aborts the whole activation with
+  # "Read-only file system". Drop that stale link before linking so the
+  # transition is automatic. Only a symlink that resolves into the Nix store is
+  # removed; a real directory or a user-owned symlink is left untouched.
+  home.activation.removeStaleHyprLink = lib.hm.dag.entryBefore ["linkGeneration"] ''
+    hyprPath="$HOME/.config/hypr"
+    if [[ -L "$hyprPath" ]]; then
+      hyprTarget="$(readlink -f "$hyprPath" || true)"
+      case "$hyprTarget" in
+        /nix/store/*)
+          run rm -f -- "$hyprPath"
+          ;;
+      esac
+    fi
+  '';
+
   # Config apps
   # recursive so the generated Noctalia config below can coexist with the
   # symlinked tree (a plain directory symlink cannot be written into).
@@ -217,10 +237,9 @@ in {
     recursive = true;
   };
   # Noctalia config with the real home directory substituted for @HOME@.
-  home.file.".config/hypr/noctalia/config.toml".source =
-    pkgs.replaceVars ./config/noctalia/noctalia-config.toml {
-      HOME = config.home.homeDirectory;
-    };
+  home.file.".config/hypr/noctalia/config.toml".source = pkgs.replaceVars ./config/noctalia/noctalia-config.toml {
+    HOME = config.home.homeDirectory;
+  };
   home.file.".config/waybar".source = ./config/waybar;
   home.file.".config/fastfetch".source = ./config/fastfetch;
   home.file.".config/foot".source = ./config/terminals/foot;
