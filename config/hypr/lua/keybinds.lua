@@ -181,6 +181,12 @@ bindd("SUPER ALT", "left", "Swap Window Left", "swapwindow", "l")
 bindd("SUPER ALT", "right", "Swap Window Right", "swapwindow", "r")
 bindd("SUPER ALT", "up", "Swap Window Up", "swapwindow", "u")
 bindd("SUPER ALT", "down", "Swap Window Down", "swapwindow", "d")
+
+-- Resize active window with mainMod SHIFT + arrow keys
+bindd("SUPER SHIFT", "left", "Resize Window Left", "resizeactive", "-40 0")
+bindd("SUPER SHIFT", "right", "Resize Window Right", "resizeactive", "40 0")
+bindd("SUPER SHIFT", "up", "Resize Window Up", "resizeactive", "0 -40")
+bindd("SUPER SHIFT", "down", "Resize Window Down", "resizeactive", "0 40")
 bindd("SUPER", "1", "Workspace 1", "workspace", "1")
 bindd("SUPER", "2", "Workspace 2", "workspace", "2")
 bindd("SUPER", "3", "Workspace 3", "workspace", "3")
