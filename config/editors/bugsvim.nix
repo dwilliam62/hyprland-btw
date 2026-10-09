@@ -57,6 +57,13 @@ in {
     bat
     wl-clipboard
     (python3.withPackages (ps: [ps.pynvim])) # python provider
+
+    # Docs / preview toolchain
+    # Snacks.image shells out to tectonic (or pdflatex) for LaTeX math in
+    # markdown previews. mermaid-cli (mmdc) is intentionally omitted upstream
+    # too when the toolchain is skipped; add pkgs.mermaid-cli if Mermaid
+    # diagram rendering is wanted (it bundles a full browser).
+    tectonic
   ];
 
   # Optional: Ensure directories and undo setup on first activation
@@ -68,6 +75,20 @@ in {
       if [ ! -d "$UNDO_DIR" ]; then
         $DRY_RUN_CMD mkdir -p "$UNDO_DIR"
         echo "Created NeoVim undo directory at $UNDO_DIR"
+      fi
+
+      # org.nvim notes directory. Mirrors the upstream ensure_org_directory step:
+      # the plugin spec points org_directory/agenda_files/default_notes_file at
+      # ~/org and ~/org/refile.org (lowercase on purpose - ~/Org is a different
+      # directory on case-sensitive filesystems).
+      ORG_DIR="$HOME/org"
+      if [ ! -d "$ORG_DIR" ]; then
+        $DRY_RUN_CMD mkdir -p "$ORG_DIR"
+        echo "Created org notes directory at $ORG_DIR"
+      fi
+      if [ ! -f "$ORG_DIR/refile.org" ]; then
+        $DRY_RUN_CMD touch "$ORG_DIR/refile.org"
+        echo "Created default org notes file at $ORG_DIR/refile.org"
       fi
 
       # Copy bugsvim config into ~/.config/nvim (writable) so lazy.nvim can manage updates

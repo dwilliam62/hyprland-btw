@@ -229,6 +229,20 @@ return {
     }
   },
   -- stylua: ignore end
+  -- snacks does not always take over Neovim's `vim.ui.*` helpers on its own
+  -- (Snacks.health reports "is not set to Snacks.input/select"), so assert them
+  -- right after setup.
+  config = function(_, opts)
+    local snacks = require('snacks')
+    snacks.setup(opts)
+
+    if opts.input == nil or opts.input.enabled ~= false then
+      snacks.input.enable()
+    end
+    if opts.picker == nil or opts.picker.enabled ~= false then
+      vim.ui.select = snacks.picker.select
+    end
+  end,
   init = function()
     vim.api.nvim_create_autocmd('User', {
       pattern = 'VeryLazy',

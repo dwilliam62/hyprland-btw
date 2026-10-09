@@ -8,6 +8,8 @@
 
 #### Hyprland-btw v0.5.4
 
+- Updated `bugsvim` configuration to current version
+  - `org.lua` added but not enabled yet
 - Made the primary username configurable
   - Added `user.nix` as the single source of truth for the username
   - `flake.nix` reads `user.nix` and threads `userName` into `configuration.nix` and `home.nix`
