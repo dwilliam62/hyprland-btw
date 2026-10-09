@@ -81,7 +81,6 @@
     noctalia-greeter
     #nvtopPackages.full # nvtop all GPUs
     onefetch # git repo fetch
-    #onlyoffice-desktopeditors
     pciutils
     ptyxis # Terminal
     ripgrep
@@ -90,9 +89,9 @@
     synfetch
     tmux #Terminal mux with hybridd ddubs-tonybtw config
     ttop # resource monitor
+    tuios
     ugrep
     vlc # Video Player
-    #wayle # Waybar alternative from hyprpanel devs
     wezterm # Terminal
     wget
     zenith # Btop/htop/bottom style monitor
