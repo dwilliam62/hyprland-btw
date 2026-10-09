@@ -34,6 +34,24 @@ local function direction(value)
 	return directions[value] or value
 end
 
+local function parse_resize_delta(value)
+	local x, y = trim(value):match("^([%-]?%d+)%s+([%-]?%d+)$")
+	return tonumber(x), tonumber(y)
+end
+
+local function active_window_size()
+	if not hl.get_active_window then
+		return nil, nil
+	end
+	local window = hl.get_active_window()
+	if not window or not window.size then
+		return nil, nil
+	end
+	local width = tonumber(window.size.x or window.size[1])
+	local height = tonumber(window.size.y or window.size[2])
+	return width, height
+end
+
 local function dispatch(name, args)
 	name = trim(name)
 	args = trim(args)
@@ -77,34 +95,63 @@ local function dispatch(name, args)
 		end
 	end
 
-	if name == "workspace" then
-		local id = tonumber(args)
-		if id and hl.dsp and hl.dsp.focus then
-			return function()
-				hl.dispatch(hl.dsp.focus({ workspace = id }))
-			end
-		end
-		if args == "" then
+	if name == "workspace" and hl.dsp and hl.dsp.focus then
+		-- Relative selectors such as "e+1" / "e-1" (SUPER + mouse wheel) are
+		-- passed through as strings; Hyprland resolves them like the legacy
+		-- dispatcher did.
+		local target = tonumber(args) or args
+		if target == "" then
 			return function() end
 		end
-		return exec_cmd("hyprctl dispatch workspace " .. args)
+		return function()
+			hl.dispatch(hl.dsp.focus({ workspace = target }))
+		end
 	end
 
 	if name == "movetoworkspace" and hl.dsp and hl.dsp.window and hl.dsp.window.move then
-		local id = tonumber(args)
+		local target = tonumber(args) or args
+		if target == "" then
+			return function() end
+		end
 		return function()
-			if id then
-				hl.dispatch(hl.dsp.window.move({ workspace = id }))
-			end
+			hl.dispatch(hl.dsp.window.move({ workspace = target }))
 		end
 	end
 
+	-- Hyprland 0.56 evaluates the argument of `hyprctl dispatch` as Lua, so the
+	-- legacy bare-word form ("hyprctl dispatch resizeactive -40 0") is rejected
+	-- and the bind silently does nothing. resizeactive/resizewindow therefore go
+	-- through hl.dsp.window.resize(), which takes an *absolute* size.
+	if (name == "resizeactive" or name == "resizewindow")
+		and hl.dsp and hl.dsp.window and hl.dsp.window.resize
+	then
+		local dx, dy = parse_resize_delta(args)
+		if dx and dy then
+			return function()
+				local current_w, current_h = active_window_size()
+				if not current_w or not current_h then
+					return
+				end
+				hl.dispatch(hl.dsp.window.resize({
+					x = math.max(1, current_w + dx),
+					y = math.max(1, current_h + dy),
+				}))
+			end
+		end
+		return function()
+			hl.dispatch(hl.dsp.window.resize())
+		end
+	end
+
+	-- Anything still unmapped has no native equivalent: every legacy dispatcher
+	-- name was removed in 0.56 and hl.dsp.exec_raw is an exec helper, not a
+	-- dispatcher passthrough. Report it instead of failing silently.
 	local raw = name
 	if args ~= "" then
 		raw = raw .. " " .. args
 	end
-	local cmd = "hyprctl dispatch " .. raw
-	return exec_cmd(cmd)
+	print("[keybinds] unmapped dispatcher: " .. raw .. " (add a hl.dsp.* mapping)")
+	return function() end
 end
 
 local function bindd(mods, key, description, dispatcher, args)
@@ -127,8 +174,6 @@ local function bindm(mods, key, description, dispatcher)
 		action = hl.dsp.window.drag()
 	elseif dispatcher == "resizewindow" and hl.dsp and hl.dsp.window and hl.dsp.window.resize then
 		action = hl.dsp.window.resize()
-	elseif hl.dsp and hl.dsp.exec_raw then
-		action = hl.dsp.exec_raw(dispatcher)
 	else
 		action = dispatch(dispatcher, "")
 	end

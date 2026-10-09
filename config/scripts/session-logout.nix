@@ -15,8 +15,11 @@ pkgs.writeShellScriptBin "session-logout" ''
 
   # 1. Exit Hyprland cleanly
   if [ "$is_hyprland" -eq 1 ]; then
+    # `hyprctl dispatch exit` (legacy bare-word form) is rejected by Hyprland
+    # 0.56, so go through the Lua dispatcher and keep the repl form as a
+    # fallback for builds without the dispatch shorthand.
+    ${pkgs.hyprland}/bin/hyprctl dispatch "hl.dsp.exit()" >/dev/null 2>&1 || true
     echo "hl.dispatch(hl.dsp.exit())" | ${pkgs.hyprland}/bin/hyprctl repl >/dev/null 2>&1 || true
-    ${pkgs.hyprland}/bin/hyprctl dispatch exit >/dev/null 2>&1 || true
     ${pkgs.procps}/bin/pkill -u "''${USER:-$(${pkgs.coreutils}/bin/id -un)}" -x Hyprland 2>/dev/null || true
   fi
 

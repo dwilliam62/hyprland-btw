@@ -15,13 +15,17 @@ pkgs.writeShellScriptBin "hyprland-cycle-window" ''
     *) echo "Usage: $(basename "$0") [next|prev]" >&2; exit 1 ;;
   esac
 
+  # Hyprland 0.56 removed the legacy bare-word dispatchers: `hyprctl dispatch
+  # <dispatcher> <args>` is now shorthand for `hl.dispatch(<lua>)`, so the old
+  # `layoutmsg "cycle$action"` / `cyclenext [prev]` forms silently did nothing.
   if [[ "$layout" == "master" || "$layout" == "monocle" ]]; then
-    ${pkgs.hyprland}/bin/hyprctl dispatch layoutmsg "cycle$action"
+    # Layout messages keep their lowercase legacy spelling ("cyclenext").
+    ${pkgs.hyprland}/bin/hyprctl dispatch "hl.dsp.layout('cycle$action')"
   else
     if [[ "$action" == "next" ]]; then
-      ${pkgs.hyprland}/bin/hyprctl dispatch cyclenext
+      ${pkgs.hyprland}/bin/hyprctl dispatch "hl.dsp.window.cycle_next({ next = true })"
     else
-      ${pkgs.hyprland}/bin/hyprctl dispatch cyclenext prev
+      ${pkgs.hyprland}/bin/hyprctl dispatch "hl.dsp.window.cycle_next({ next = false })"
     fi
   fi
 ''
