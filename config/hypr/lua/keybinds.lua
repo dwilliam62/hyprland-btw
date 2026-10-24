@@ -70,7 +70,7 @@ local function resize_active_by(dx, dy)
 
 	local target_w = math.max(1, start_w + dx)
 	local target_h = math.max(1, start_h + dy)
-	hl.dispatch(hl.dsp.window.resize({x = target_w, y = target_h, exact = true}))
+	hl.dispatch(hl.dsp.window.resize({ x = target_w, y = target_h, exact = true }))
 
 	local now_w, now_h = window_size(hl.get_active_window and hl.get_active_window())
 	if not now_w or not now_h then
@@ -163,9 +163,7 @@ local function dispatch(name, args)
 	-- Hyprland 0.56 evaluates the argument of `hyprctl dispatch` as Lua, so the
 	-- legacy bare-word form ("hyprctl dispatch resizeactive -40 0") is rejected
 	-- and the bind silently does nothing.
-	if (name == "resizeactive" or name == "resizewindow")
-		and hl.dsp and hl.dsp.window and hl.dsp.window.resize
-	then
+	if (name == "resizeactive" or name == "resizewindow") and hl.dsp and hl.dsp.window and hl.dsp.window.resize then
 		local dx, dy = parse_resize_delta(args)
 		if dx and dy then
 			return function()
@@ -214,36 +212,43 @@ local function bindm(mods, key, description, dispatcher)
 	hl.bind(chord(mods, key), action, { description = description, mouse = true })
 end
 
+-- Launch Apps
 bindd("SUPER", "Return", "Launch Terminal", "exec", "ghostty")
 bindd("SUPER SHIFT", "Return", "Launch Kitty", "exec", "kitty-bg")
 bindd("SUPER", "Q", "Close Active Window", "killactive", "")
 bindd("SUPER SHIFT", "Q", "Exit Hyprland", "exec", "session-logout")
 bindd("SUPER", "T", "Launch FIle Mgr", "exec", "thunar")
-bindd("SUPER", "space", "Toggle floating", "togglefloating", "")
-bindd("SUPER", "F", "Fullscreen (monitor)", "fullscreen", "1")
-bindd("SUPER SHIFT", "F", "Fullscreen (window)", "fullscreen", "")
 bindd("SUPER", "R", "Show app menu", "exec", "rofi-legacy.menu")
-bindd("SUPER", "S", "Take screenshot", "exec", "snip")
-bindd("ALT SHIFT", "S", "Take region screenshot", "exec", "hyprshot -m region -o ~/Pictures/Screenshots")
+bindd("SUPER", "D", "Toggle launcher", "exec", "noctalia-msg panel-toggle launcher")
+bindd("SUPER SHIFT", "comma", "Open settings", "exec", "nocalia-msg settings-toggle")
+bindd("SUPER", "C", "Toggle control center", "exec", "noctalia-msg panel-toggle control-center")
+bindd("SUPER SHIFT", "C", "Edit config files", "exec", "config-menu")
+bindd("SUPER", "X", "Open session menu", "exec", "noctalia-msg panel-toggle session")
+bindd("SUPER SHIFT", "T", "Dropdown Terminal", "exec", "sh -lc 'DropTerminal'")
 bindd("SUPER SHIFT", "K", "Search Keybinds", "exec", "keybinds")
 bindd("SUPER", "Tab", "QS Overview", "exec", "qs ipc -c overview call overview toggle")
 bindd("SUPER", "A", "QS Overview", "exec", "qs ipc -c overview call overview toggle")
-bindd("SUPER", "D", "Toggle launcher", "exec", "noctalia-msg panel-toggle launcher")
 bindd("SUPER", "M", "Toggle notifications", "exec", "noctalia-msg panel-toggle control-center notifications")
 bindd("SUPER", "V", "Open clipboard", "exec", "noctalia-msg panel-toggle clipboard")
-bindd("SUPER SHIFT", "comma", "Open settings", "exec", "noctalia-msg settings-toggle")
 bindd("SUPER CTRL", "L", "Lock screen", "exec", "noctalia-msg session lock")
 bindd("SUPER SHIFT", "Y", "Toggle wallpaper", "exec", "noctalia-msg panel-toggle wallpaper")
-bindd("SUPER", "X", "Open session menu", "exec", "noctalia-msg panel-toggle session")
-bindd("SUPER", "C", "Toggle control center", "exec", "noctalia-msg panel-toggle control-center")
-bindd("SUPER SHIFT", "C", "Edit config files", "exec", "config-menu")
+bindd("SUPER SHIFT", "V", "Launch butterview", "exec", "butterview $HOME/Pictures/Wallpapers")
+-- Layouts
+-- Float, max, fullscreen
+bindd("SUPER", "space", "Toggle floating", "togglefloating", "")
+bindd("SUPER", "F", "Fullscreen (monitor)", "fullscreen", "1")
+bindd("SUPER SHIFT", "F", "Fullscreen (window)", "fullscreen", "")
+-- Screenshot
+bindd("SUPER", "S", "Take screenshot", "exec", "snip")
+bindd("ALT SHIFT", "S", "Take region screenshot", "exec", "hyprshot -m region -o ~/Pictures/Screenshots")
 bindd("SUPER CTRL", "R", "Screenshot region", "exec", "noctalia-msg screenshot-region")
-bindd("SUPER SHIFT", "T", "Dropdown Terminal", "exec", "sh -lc 'DropTerminal'")
+-- L:ayouts
 bindd("SUPER ALT", "L", "Toggle Layouts", "exec", "hyprland-change-layout toggle")
 bindd("SUPER ALT", "1", "Layout Dwindle", "exec", "hyprland-change-layout dwindle")
 bindd("SUPER ALT", "2", "Layout Master", "exec", "hyprland-change-layout master")
 bindd("SUPER ALT", "3", "Layout Scrolling", "exec", "hyprland-change-layout scrolling")
 bindd("SUPER ALT", "4", "Layout Monocle", "exec", "hyprland-change-layout monocle")
+-- Window selections
 bindd("SUPER", "left", "Focus left", "movefocus", "l")
 bindd("SUPER", "right", "Focus right", "movefocus", "r")
 bindd("SUPER", "up", "Focus up", "movefocus", "u")
@@ -252,10 +257,12 @@ bindd("SUPER", "l", "Focus left", "movefocus", "l")
 bindd("SUPER", "h", "Focus right", "movefocus", "r")
 bindd("SUPER", "J", "Cycle next", "exec", "hyprland-cycle-window next")
 bindd("SUPER", "K", "Cycle previous", "exec", "hyprland-cycle-window prev")
+-- Audio
 bindd("", "XF86AudioRaiseVolume", "Volume up", "exec", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+")
 bindd("", "XF86AudioLowerVolume", "Volume down", "exec", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")
 bindd("", "XF86AudioMute", "Toggle mute", "exec", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
 bindd("", "XF86AudioMicMute", "Toggle mic mute", "exec", "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
+-- Window movements
 bindd("SUPER ALT", "left", "Swap Window Left", "swapwindow", "l")
 bindd("SUPER ALT", "right", "Swap Window Right", "swapwindow", "r")
 bindd("SUPER ALT", "up", "Swap Window Up", "swapwindow", "u")
@@ -288,6 +295,6 @@ bindd("SUPER SHIFT", "9", "Move to workspace 9", "movetoworkspace", "9")
 bindd("SUPER SHIFT", "0", "Move to workspace 10", "movetoworkspace", "10")
 bindd("SUPER", "mouse_down", "Scroll next workspace", "workspace", "e+1")
 bindd("SUPER", "mouse_up", "Scroll prev workspace", "workspace", "e-1")
-
+-- Mouse actions
 bindm("SUPER", "mouse:272", "Move window", "movewindow")
 bindm("SUPER", "mouse:273", "Resize window", "resizewindow")

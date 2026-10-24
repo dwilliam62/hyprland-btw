@@ -33,6 +33,15 @@ local startup_commands = {
   -- lock, causing repeated "noctalia is already running" restarts and
   -- an unpredictable winner (sometimes without the Hyprland-specific
   -- config), which is why panels like Settings can behave oddly.
+  --
+  -- We do have to ask systemd for the unit, though. WantedBy=default.target
+  -- only starts it the first time the user manager reaches default.target,
+  -- and that manager outlives the graphical session: on logout noctalia sees
+  -- the Wayland socket die and exits 0, which Restart=on-failure ignores, so
+  -- nothing brings it back on the next login. Import the live session's
+  -- variables first (the way mangowc/autostart.sh does) so the unit cannot
+  -- inherit a stale HYPRLAND_INSTANCE_SIGNATURE/WAYLAND_DISPLAY.
+  "systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE 2>/dev/null || true; systemctl --user start noctalia.service",
   "systemctl --user start hyprpolkitagent",
 }
 
