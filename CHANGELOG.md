@@ -6,6 +6,26 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.5
+
+- Added:
+  - `butterview` image previewer from JustAGuylinux
+    - Window rule: center, floating 70%
+    - Binding `SUPERSHIFT + V` opens `$HOME/Pictures/Wallpapers/`
+  - `ghee` GIT info viewer from JustAGuylinux
+- Updated:
+  - Bindings, began to organize by function
+- Fixed:
+  - `butterview` window rule never applied
+    - Hyprland matches window rules with RE2 full match, and the title is `<file> — butterview`, so `^butterview` never matched
+    - Title pattern is now `^.*butterview$`
+  - Quickshell `overview` failed to load on rebuilds
+    - `seedOverviewCode` did `rm -rf` + `cp -R` while quickshell watched the directory, so it reloaded against a missing or half-written tree
+    - Seeding is now skipped when the deployed tree already matches the source, otherwise a staged copy is swapped in with renames
+  - Noctalia did not start after logout/login
+    - The unit exits 0 when the Wayland socket dies, which `Restart=on-failure` ignores, and `WantedBy=default.target` never re-fires because the user manager outlives the session
+    - `startup.lua` now imports the session environment and starts `noctalia.service` on each Hyprland start
+
 #### Hyprland-btw v0.5.4
 
 - Updated `bugsvim` configuration to current version
