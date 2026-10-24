@@ -2,6 +2,8 @@
   nixpkgs.overlays = [
     (final: prev: {
       synfetch = inputs.synfetch.packages.${final.stdenv.hostPlatform.system}.default;
+      ghee = inputs.ghee.packages.${final.stdenv.hostPlatform.system}.ghee;
+      butterview = inputs.butterview.packages.${final.stdenv.hostPlatform.system}.butterview;
 
       # Mango ships its Wayland session entry with a bare `Exec=mango`. greetd's
       # service PATH does not include the system profile, so noctalia-greeter

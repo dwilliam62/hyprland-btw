@@ -2,6 +2,10 @@
   #  Add packages below.
 
   environment.systemPackages = with pkgs; [
+    # Drews apps
+    butterview
+    ghee
+
     ## Hyprland specific
     hyprpaper
     hyprshot

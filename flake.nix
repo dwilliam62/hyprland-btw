@@ -15,6 +15,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     alejandra.url = "github:kamadorueda/alejandra";
+
+    ghee = {
+      url = "git+https://justaguy.dev/drew/ghee";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    butterview = {
+      url = "git+https://justaguy.dev/drew/butterview";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
