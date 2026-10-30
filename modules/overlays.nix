@@ -1,7 +1,30 @@
 {inputs, ...}: {
   nixpkgs.overlays = [
     (final: prev: {
-      synfetch = inputs.synfetch.packages.${final.stdenv.hostPlatform.system}.default;
+      # Local build of synfetch (github:SXSLVT/synfetch).
+      #
+      # The upstream flake's package reads the deprecated `pkgs.stdenv.isLinux`
+      # attribute, so pulling in `inputs.synfetch.packages.<system>.default`
+      # makes every evaluation print:
+      #   evaluation warning: stdenv.isLinux is deprecated, use stdenv.hostPlatform.isLinux instead
+      #
+      # Rebuilding the same writeShellApplication here, using the script from the
+      # input, keeps the tool and drops the warning. Go back to the input package
+      # once upstream is fixed.
+      synfetch = prev.writeShellApplication {
+        name = "synfetch";
+        runtimeInputs = with prev;
+          [
+            coreutils
+            ncurses
+          ]
+          ++ prev.lib.optionals prev.stdenv.hostPlatform.isLinux [
+            pciutils
+            procps
+          ];
+        checkPhase = "";
+        text = builtins.readFile "${inputs.synfetch}/synfetch";
+      };
       ghee = inputs.ghee.packages.${final.stdenv.hostPlatform.system}.ghee;
       butterview = inputs.butterview.packages.${final.stdenv.hostPlatform.system}.butterview;
 

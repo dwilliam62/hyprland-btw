@@ -6,6 +6,15 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.6
+
+- Fixed:
+  - eval warning `stdenv.isLinux is deprecated, use stdenv.hostPlatform.isLinux instead`
+    - Came from the `synfetch` flake input, not from this repo
+    - `modules/overlays.nix` now builds the same `writeShellApplication` locally
+      from the input's script, using `stdenv.hostPlatform.isLinux`
+    - Go back to `inputs.synfetch.packages.<system>.default` once upstream is fixed
+
 #### Hyprland-btw v0.5.5
 
 - Added:
