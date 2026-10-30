@@ -1,9 +1,9 @@
 
 
-# hyprland-btw — Hyprland-on-NixOS (single-host)
+# hyprland-btw — Hyprland-and-Mango-on-NixOS (Multi-host)
 
 Super simple NixOS + Hyprland configuration derived from the **tony,btw** example,
-with a few additions:
+with a few additions:  MangoWC is from my own configuration.
 
 - Modular drivers for AMD/Intel/NVIDIA GPUs and VM guest services
 - Small install script for first-time setup on a single host
