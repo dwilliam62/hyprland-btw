@@ -14,7 +14,6 @@
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    # Pin to a known-good LTS kernel to avoid 7.0 boot failures.
     kernelPackages = pkgs.linuxPackages_latest;
     # Prevent systemd from auto-activating GPT swap partitions.
     kernelParams = ["systemd.gpt_auto=0"];
@@ -207,7 +206,7 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
+  #nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
   security.sudo.wheelNeedsPassword = true;
 
@@ -218,8 +217,9 @@
     extraConfig = ''
       polkit.addRule(function(action, subject) {
         if (subject.isInGroup("wheel")) {
-          if (action.id == "org.noctalia.greeter.sync-appearance" ||
-              action.id == "org.freedesktop.systemd1.manage-units") {
+          if (action.id == "org.noctalia.greeter.sync-appearance") {
+          # if (action.id == "org.noctalia.greeter.sync-appearance" ||
+          #    action.id == "org.freedesktop.systemd1.manage-units") {
             return polkit.Result.YES;
           }
         }
