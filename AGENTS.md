@@ -61,6 +61,26 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
   ./install.sh --non-interactive --gpu nvidia
   ```
 
+### Versioning / Releases
+- **The version number is not stored in one place - bump every copy together:**
+  - `CHANGELOG.md`: add a new `#### Hyprland-btw vX.Y.Z` section at the top (the
+    heading is the release marker)
+  - `config/hypr/lua/env.lua`: `hl.env("HYPRBTW", "X.Y.Z")` - the active
+    Hyprland session, and the value `fastfetch` prints
+  - Alternative / legacy sessions each keep their own copy; bump them too when
+    you maintain them:
+    - `config/mangowc/env.conf`: `env=HYPRBTW,X.Y.Z`
+    - `config/mangowc/autostart.sh`: `export HYPRBTW="X.Y.Z"`
+    - `config/hypr/LegacyConf/env.conf`: `env = HYPRBTW,X.Y.Z`
+- `config/fastfetch/config.jsonc` only prints `${HYPRBTW}`, so it needs no edit.
+- There is no version variable in the Nix code, so no `.nix` file needs editing
+  when releasing.
+- Verify before committing a release - every path below should report the new
+  version:
+  ```bash
+  grep -rn "HYPRBTW" config/ CHANGELOG.md
+  ```
+
 ---
 
 ## High-Level Architecture & Structure
