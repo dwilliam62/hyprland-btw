@@ -14,6 +14,11 @@
     - `modules/overlays.nix` now builds the same `writeShellApplication` locally
       from the input's script, using `stdenv.hostPlatform.isLinux`
     - Go back to `inputs.synfetch.packages.<system>.default` once upstream is fixed
+  - Invalid `nixpkgs-stable` URL
+  - `nixvim` flake input never used and didn't have `follow nixpkgs`
+  - `alejandra` flake input missing `follow nixpkgs`
+  - `Freedeskop` setting had security issue
+  - Duplicate `AllowUnFree` setting
 
 #### Hyprland-btw v0.5.5
 
