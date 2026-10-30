@@ -10,17 +10,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    #nixvim.url = { 
+    #nixvim.url = {
     #  "github:nix-community/nixvim";
     #  inputs.nixpkgs.follows = "nixpkgs";
     #};
-    
+
     synfetch = {
       url = "github:SXSLVT/synfetch";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    alejandra.url = { 
-      "github:kamadorueda/alejandra";
+    alejandra = {
+      url = "github:kamadorueda/alejandra";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
