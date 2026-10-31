@@ -8,6 +8,10 @@
 
 #### Hyprland-btw v0.5.6
 
+- Added:
+  - `SUPER SHIFT + E` opens the settings menu (`config-menu`)
+    - Sits alongside the existing `SUPER SHIFT + C`; both open the same menu
+
 - Fixed:
   - eval warning `stdenv.isLinux is deprecated, use stdenv.hostPlatform.isLinux instead`
     - Came from the `synfetch` flake input, not from this repo
@@ -26,6 +30,13 @@
     - GLFW asks for `EGL_ALPHA_SIZE 8`, so `kitty` exited with `EGL: No EGLConfigs returned`
     - `config/hypr/lua/settings.lua` now sets `quirks.skip_non_kms_dmabuf_formats = false`, so the full format list is advertised
       - Matches the fix already in `Hyprland-Dots` (`config/hypr/lua/settings.lua`)
+  - `config-menu` offered Hyprland config files that no longer exist
+    - It still listed `hyprland.conf`, `env.conf`, `startup.conf`, `appearance.conf` and `hyprpaper.conf`
+      - The `-f` guard silently skipped them, so the menu only ever showed dead entries
+    - It now lists `hyprland.lua` and every `lua/*.lua` module (animations, decorations, env, keybinds, monitors, settings, startup, user_overrides, window_rules, workspaces)
+  - README repository layout was still the pre-migration tree
+    - It showed `config/hypr/*.conf` files and no `lua/` directory, so it predated the Lua config entirely
+    - Regenerated with `tree -h -Q`; `config/local.icons/` (a vendored icon theme, ~14.8k files) is excluded and noted
 
 - Removed:
   - `config/hypr/LegacyConf/` and `config/hypr/lua/compat_legacy.lua`

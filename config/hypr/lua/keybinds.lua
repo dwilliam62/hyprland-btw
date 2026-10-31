@@ -223,6 +223,7 @@ bindd("SUPER", "D", "Toggle launcher", "exec", "noctalia-msg panel-toggle launch
 bindd("SUPER SHIFT", "comma", "Open settings", "exec", "nocalia-msg settings-toggle")
 bindd("SUPER", "C", "Toggle control center", "exec", "noctalia-msg panel-toggle control-center")
 bindd("SUPER SHIFT", "C", "Edit config files", "exec", "config-menu")
+bindd("SUPER SHIFT", "E", "Edit settings menu", "exec", "config-menu")
 bindd("SUPER", "X", "Open session menu", "exec", "noctalia-msg panel-toggle session")
 bindd("SUPER SHIFT", "T", "Dropdown Terminal", "exec", "sh -lc 'DropTerminal'")
 bindd("SUPER SHIFT", "K", "Search Keybinds", "exec", "keybinds")
