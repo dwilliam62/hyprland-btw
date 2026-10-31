@@ -27,6 +27,12 @@
     - `config/hypr/lua/settings.lua` now sets `quirks.skip_non_kms_dmabuf_formats = false`, so the full format list is advertised
       - Matches the fix already in `Hyprland-Dots` (`config/hypr/lua/settings.lua`)
 
+- Removed:
+  - `config/hypr/LegacyConf/` and `config/hypr/lua/compat_legacy.lua`
+    - Left over from the Lua migration - the `*.conf` layout the Lua config replaced
+    - `compat_legacy.lua` only ever `source`d `binds.conf` and `WindowRules.conf` from there, and `hyprland.lua` never loaded it
+    - `LegacyConf` also carried the only other `env.conf` with a stale `HYPRBTW` version, so the release checklist drops it too
+
 #### Hyprland-btw v0.5.5
 
 - Added:
