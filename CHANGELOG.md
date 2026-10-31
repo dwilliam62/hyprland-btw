@@ -19,6 +19,13 @@
   - `alejandra` flake input missing `follow nixpkgs`
   - `Freedeskop` setting had security issue
   - Duplicate `AllowUnFree` setting
+  - `kitty` and `alacritty` could not start on a VM (`virgl`)
+    - Hyprland 0.57 added `quirks:skip_non_kms_dmabuf_formats`, which defaults to `true`
+      - It advertises only the renderer dmabuf formats that can be imported into KMS
+      - On `virtio-gpu` that leaves `XRGB8888` only, so no alpha `EGLConfig` exists
+    - GLFW asks for `EGL_ALPHA_SIZE 8`, so `kitty` exited with `EGL: No EGLConfigs returned`
+    - `config/hypr/lua/settings.lua` now sets `quirks.skip_non_kms_dmabuf_formats = false`, so the full format list is advertised
+      - Matches the fix already in `Hyprland-Dots` (`config/hypr/lua/settings.lua`)
 
 #### Hyprland-btw v0.5.5
 
