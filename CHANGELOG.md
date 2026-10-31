@@ -13,6 +13,7 @@
     - Sits alongside the existing `SUPER SHIFT + C`; both open the same menu
 
 - Fixed:
+  - `idle_cursor_timeout` in `config/hypr/lua/settings.lua` was 30 max value 20
   - eval warning `stdenv.isLinux is deprecated, use stdenv.hostPlatform.isLinux instead`
     - Came from the `synfetch` flake input, not from this repo
     - `modules/overlays.nix` now builds the same `writeShellApplication` locally
