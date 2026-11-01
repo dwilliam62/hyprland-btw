@@ -35,17 +35,11 @@
     };
   };
 
-  llm-agents = {
-      url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   outputs = inputs @ {
     self,
     nixpkgs,
     nixpkgs-stable,
     home-manager,
-    nixvim,
     alejandra,
     ...
   }: let

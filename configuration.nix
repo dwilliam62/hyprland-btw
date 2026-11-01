@@ -129,6 +129,23 @@
     zsh.enable = true; # ensure system zsh is configured for login shells
   };
 
+  # Foreign dynamically linked binaries cannot use NixOS' stub-ld loader, which
+  # is what `environment.ldso` defaults to. nix-ld installs a real loader at
+  # /lib64/ld-linux-x86-64.so.2 plus a library search path for them. Enabled
+  # base-wide because freebuff-cli (config/cli/freebuff-cli.nix) is a Home
+  # Manager package on every host and downloads its own prebuilt binary on
+  # first run. Hosts can still add libraries: listOf options merge, so
+  # hosts/xps15 keeps its openssl/zlib/bzip2/expat/ocl-icd entries on top.
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      alsa-lib # audio output
+      libpulseaudio # PulseAudio / PipeWire
+      glib # GLib and GObject
+      libsecret # secret storage
+    ];
+  };
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 

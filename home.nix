@@ -26,6 +26,7 @@ in {
     ./config/cli/git.nix #config git settings AND username/EMail
     ./config/cli/htop.nix # htop monitor
     ./config/cli/btop.nix # btop monitor
+    ./config/cli/freebuff-cli.nix # freebuff coding agent (npm launcher)
     ./config/terminals/kitty.nix #kitty term and kitty-bg (background in kitty)
     ./config/mangowc.nix # Mango (mangowm) compositor config
     ./config/noctalia.nix # Noctalia QuickShell wiring (fronm ddubsos)
