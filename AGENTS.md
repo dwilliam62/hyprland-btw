@@ -69,7 +69,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
     Hyprland session, and the value `fastfetch` prints
   - The alternative `mangowc` session keeps its own copy; bump it too when you
     maintain it:
-    - `config/mangowc/env.conf`: `env=HYPRBTW,X.Y.Z`
+    - `config/mangowc/env.toml`: `"HYPRBTW" = "X.Y.Z"`
     - `config/mangowc/autostart.sh`: `export HYPRBTW="X.Y.Z"`
 - `config/fastfetch/config.jsonc` only prints `${HYPRBTW}`, so it needs no edit.
 - There is no version variable in the Nix code, so no `.nix` file needs editing

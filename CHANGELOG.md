@@ -6,6 +6,23 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.7
+
+- Updated:
+  - Mango session configs converted from `*.conf` to TOML for mango 0.18.x
+    - `config/mangowc/`: `config.toml`, `env.toml`, `bind.toml`, `monitor.toml`, `tag.toml`, `rule.toml`, `noctalia.toml`
+    - Old key names replaced with the 0.18 snake_case names (`exec_once`, `gap_outer_horizontal`, `border_px`, `fade_in_begin_opacity`, `numlock_on`, `default_master_factor`, `sloppy_focus`, ...)
+    - `monitorrule`/`tagrule`/`windowrule` are now `[[rule.monitor_rule]]`, `[[rule.tag_rule]]` and `[[rule.window_rule]]` tables, with `isfloating`/`appid` renamed to `is_floating`/`app_id`
+    - The repeated `source=` lines are one `source` array
+    - `config/mangowc.nix` deletes leftover `*.conf` on activation, because mango prefers `config.conf` over `config.toml`
+    - `bin/reload.sh` and `bin/toggle-outer-gaps.sh` edit the `.toml` files
+    - README layout tree and the AGENTS.md release checklist point at `env.toml`
+
+- Fixed:
+  - `SUPER ALT + F` was bound twice: `set_proportion` and Nautilus; Nautilus is now `SUPER ALT + N`
+  - The mouse wheel bound each axis twice (`viewtoleft`/`viewtoright` and the `*_have_client` pair); kept the `*_have_client` versions
+  - The Mango copy of `HYPRBTW` still reported `0.5.3` in `env.toml` and `autostart.sh`
+
 #### Hyprland-btw v0.5.6
 
 - Added:

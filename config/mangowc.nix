@@ -11,7 +11,7 @@
 in {
   # Mango (mangowm) compositor configuration.
   # Deployed as real (writable) files because the upstream helper scripts
-  # (reload.sh, toggle-outer-gaps.sh) edit config.conf in place.
+  # (reload.sh, toggle-outer-gaps.sh) edit config.toml in place.
   home.activation.mangowcSetup = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -eu
 
@@ -25,7 +25,18 @@ in {
     $DRY_RUN_CMD chmod +x "$DEST/autostart.sh" 2>/dev/null || true
     $DRY_RUN_CMD chmod +x "$DEST"/bin/* 2>/dev/null || true
 
-    # Mango reads ~/.config/mango/config.conf; link it to the mangowc config dir
+    # Mango prefers config.conf over config.toml, so leftover *.conf files from
+    # before the TOML migration would silently win. Drop them on every activation.
+    $DRY_RUN_CMD rm -f \
+      "$DEST/config.conf" \
+      "$DEST/env.conf" \
+      "$DEST/bind.conf" \
+      "$DEST/monitor.conf" \
+      "$DEST/tag.conf" \
+      "$DEST/rule.conf" \
+      "$DEST/noctalia.conf"
+
+    # Mango reads ~/.config/mango/config.toml; link it to the mangowc config dir
     $DRY_RUN_CMD ln -sfn mangowc "$HOME/.config/mango"
 
     # Deploy the Noctalia config with the real home directory substituted in.

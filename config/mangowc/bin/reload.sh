@@ -6,14 +6,14 @@
 
 set +e
 
-# Sync default layout from env.conf to tag.conf if set
-ENV_CONF="${HOME}/.config/mangowc/env.conf"
-TAG_CONF="${HOME}/.config/mangowc/tag.conf"
+# Sync default layout from env.toml to tag.toml if set
+ENV_TOML="${HOME}/.config/mangowc/env.toml"
+TAG_TOML="${HOME}/.config/mangowc/tag.toml"
 
-if [[ -f "${ENV_CONF}" && -f "${TAG_CONF}" ]]; then
-    DEF_LAYOUT="$(grep -E '^env=MANGO_DEFAULT_LAYOUT,' "${ENV_CONF}" | cut -d',' -f2 | tr -d ' ' || true)"
+if [[ -f "${ENV_TOML}" && -f "${TAG_TOML}" ]]; then
+    DEF_LAYOUT="$(sed -nE 's/^[[:space:]]*"?MANGO_DEFAULT_LAYOUT"?[[:space:]]*=[[:space:]]*"?([A-Za-z0-9_]+)"?[[:space:]]*$/\1/p' "${ENV_TOML}" | head -n1)"
     if [[ -n "${DEF_LAYOUT}" ]]; then
-        sed -i -E "s/layout_name:[a-zA-Z0-9_]+/layout_name:${DEF_LAYOUT}/g" "${TAG_CONF}"
+        sed -i -E "s/^([[:space:]]*layout_name[[:space:]]*=[[:space:]]*)\"[^\"]*\"/\1\"${DEF_LAYOUT}\"/" "${TAG_TOML}"
     fi
 fi
 

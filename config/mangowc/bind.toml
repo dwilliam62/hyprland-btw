@@ -1,0 +1,172 @@
+# ==================================================
+#  MangoWC - (2026)
+#  Mango Key Bindings (mango 0.18.x, TOML)
+# ==================================================
+
+[bind.default]
+
+# ============================================
+# System Actions
+# ============================================
+"SUPER+ALT+r" = "spawn_shell,~/.config/mangowc/bin/reload.sh"
+"SUPER+ALT+l" = "spawn,noctalia msg session lock"
+"SUPER+SHIFT+M" = "spawn_shell,session-logout"
+"SUPER+q" = "killclient"
+
+# ============================================
+# Audio (media keys)
+# ============================================
+"XF86AudioRaiseVolume" = "spawn,wpctl set-volume @DEFAULT_SINK@ 5%+"
+"XF86AudioLowerVolume" = "spawn,wpctl set-volume @DEFAULT_SINK@ 5%-"
+"XF86AudioMute" = "spawn,wpctl set-mute @DEFAULT_SINK@ toggle"
+
+# ============================================
+# Applications (Kitty / Ghostty + Noctalia)
+# ============================================
+"SUPER+Return" = "spawn,kitty"
+"SUPER+CTRL+Return" = "spawn,kitty"
+"SUPER+SHIFT+Return" = "spawn,ghostty"
+
+# Scratchpad terminal (drop-down kitty)
+"SUPER+SHIFT+T" = "toggle_named_scratchpad,none,scratchpad,kitty -T scratchpad"
+
+# Noctalia Shell Controls
+"SUPER+D" = "spawn,noctalia msg panel-toggle launcher"
+"SUPER+SHIFT+w" = "spawn,noctalia msg panel-toggle wallpaper"
+"SUPER+SHIFT+period" = "spawn,noctalia msg settings-toggle"
+
+# Utilities & File Managers
+"SUPER+E" = "spawn_shell,thunar"
+"SUPER+ALT+N" = "spawn_shell,nautilus"
+"SUPER+Y" = "spawn_shell,kitty -T floating-kitty -e yazi"
+"SUPER+ALT+B" = "spawn_shell,kitty -T btop -e btop"
+"SUPER+SHIFT+S" = "spawn_shell,~/.config/mangowc/bin/screenshot.sh"
+
+# ============================================
+# Window Focus (SUPER + Arrows)
+# ============================================
+"SUPER+Left" = "focusdir,left"
+"SUPER+Right" = "focusdir,right"
+"SUPER+Up" = "focusdir,up"
+"SUPER+Down" = "focusdir,down"
+
+# ============================================
+# Window Movement (SUPER + Shift + Arrows)
+# ============================================
+"SUPER+SHIFT+Up" = "exchange_client,up"
+"SUPER+SHIFT+Down" = "exchange_client,down"
+"SUPER+SHIFT+Left" = "exchange_client,left"
+"SUPER+SHIFT+Right" = "exchange_client,right"
+
+# ============================================
+# Workspace Navigation (Tags)
+# ============================================
+"SUPER+CTRL+Up" = "viewtoleft,0"
+"SUPER+CTRL+Down" = "viewtoright,0"
+"SUPER+CTRL+ALT+Up" = "tagtoleft,0"
+"SUPER+CTRL+ALT+Down" = "tagtoright,0"
+
+# ============================================
+# Workspaces (1-9)
+# ============================================
+"SUPER+1" = "view,1"
+"SUPER+2" = "view,2"
+"SUPER+3" = "view,3"
+"SUPER+4" = "view,4"
+"SUPER+5" = "view,5"
+"SUPER+6" = "view,6"
+"SUPER+7" = "view,7"
+"SUPER+8" = "view,8"
+"SUPER+9" = "view,9"
+
+"SUPER+SHIFT+1" = "tag,1"
+"SUPER+SHIFT+2" = "tag,2"
+"SUPER+SHIFT+3" = "tag,3"
+"SUPER+SHIFT+4" = "tag,4"
+"SUPER+SHIFT+5" = "tag,5"
+"SUPER+SHIFT+6" = "tag,6"
+"SUPER+SHIFT+7" = "tag,7"
+"SUPER+SHIFT+8" = "tag,8"
+"SUPER+SHIFT+9" = "tag,9"
+
+# ============================================
+# Monitor Navigation
+# ============================================
+"SUPER+CTRL+Left" = "focusmon,left"
+"SUPER+CTRL+Right" = "focusmon,right"
+"SUPER+SHIFT+CTRL+Left" = "tagmon,left"
+"SUPER+SHIFT+CTRL+Right" = "tagmon,right"
+
+# ============================================
+# Window States & Actions
+# ============================================
+"SUPER+equal" = "resizewin,5,0"
+"SUPER+minus" = "resizewin,-5,0"
+"SUPER+CTRL+equal" = "resizewin,0,5"
+"SUPER+CTRL+minus" = "resizewin,0,-5"
+
+"SUPER+space" = "togglefloating"
+"SUPER+O" = "toggleoverview"
+"ALT+Tab" = "toggleoverview"
+"SUPER+Tab" = "focusstack,next"
+
+"SUPER+SHIFT+f" = "togglefullscreen"
+"SUPER+f" = "togglemaximizescreen"
+# "SUPER+f" = "togglefakefullscreen"
+"ALT+a" = "togglemaximizescreen"
+
+"SUPER+I" = "minimized"
+"SUPER+SHIFT+I" = "restore_minimized"
+"SUPER+SHIFT+o" = "toggleoverlay"
+"SUPER+SHIFT+g" = "toggleglobal"
+"ALT+z" = "toggle_scratchpad"
+
+# ============================================
+# Gaps & Layout
+# ============================================
+"CTRL+space" = "switch_layout"
+"SUPER+ALT+f" = "set_proportion,1.0"
+"ALT+space" = "switch_proportion_preset"
+
+"ALT+SHIFT+X" = "incgaps,1"
+"ALT+SHIFT+Z" = "incgaps,-1"
+"ALT+SHIFT+R" = "togglegaps"
+"SUPER+SHIFT+A" = "spawn_shell,~/.config/mangowc/bin/toggle-outer-gaps.sh"
+
+# ============================================
+# Passthrough Mode (Keymode)
+# Temporarily disables host key and mouse bindings so
+# shortcuts pass directly to virtual machines or remote sessions.
+# ============================================
+# Press SUPER + P to enter passthrough mode
+"SUPER+P" = "setkeymode,passthrough"
+
+# ============================================
+# Mouse Button Bindings
+# ============================================
+[mousebind.default]
+"SUPER+btn_left" = "moveresize,curmove"
+"SUPER+btn_right" = "moveresize,curresize"
+
+# ============================================
+# Axis Bindings
+# ============================================
+[axisbind.default]
+# Mouse window movement
+"SUPER+ALT+UP" = "focusdir,left"
+"SUPER+ALT+DOWN" = "focusdir,right"
+
+# Mouse wheel workspace navigation (skips tags without clients)
+"SUPER+UP" = "viewtoleft_have_client"
+"SUPER+DOWN" = "viewtoright_have_client"
+"SUPER+CTRL+UP" = "tagtoleft"
+"SUPER+CTRL+DOWN" = "tagtoright"
+
+# --- Start of Passthrough Mode ---
+[bind.passthrough]
+
+# Press SUPER + Escape to exit passthrough and return to host control
+"SUPER+Escape" = "setkeymode,default"
+
+# Because host mouse and key binds are in 'default' and not 'passthrough',
+# MangoWM will ignore them while this mode is active.

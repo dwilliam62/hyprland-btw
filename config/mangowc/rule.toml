@@ -1,0 +1,40 @@
+# ==================================================
+#  MangoWC - (2026)
+#  Mango Window Rules
+# ==================================================
+
+# Floating kitty window (spawned via SUPER+CTRL+Return)
+[[rule.window_rule]]
+is_floating = 1
+width = 900
+height = 600
+title = "floating-kitty"
+
+# Picture-in-picture
+[[rule.window_rule]]
+is_floating = 1
+title = "Picture-in-Picture"
+
+# Noctalia Settings - centered, floating, and 75% of screen
+[[rule.window_rule]]
+is_floating = 1
+width = 0.75
+height = 0.75
+app_id = "dev.noctalia.Noctalia"
+
+# Launch apps on fixed tags
+[[rule.window_rule]]
+tags = 2
+app_id = "google-chrome"
+
+[[rule.window_rule]]
+tags = 3
+app_id = "discord"
+
+[[rule.window_rule]]
+tags = 3
+app_id = "discord-canary"
+
+[[rule.window_rule]]
+tags = 9
+app_id = "com.obsproject.Studio"

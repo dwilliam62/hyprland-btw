@@ -7,8 +7,8 @@
 set +e
 
 # Project version
-export HYPRBTW="0.5.3"
-export MANGO_DOTS_VERSION="0.1.0"
+export HYPRBTW="0.5.7"
+export MANGO_DOTS_VERSION="0.2.0"
 export NOCTALIA_CONFIG_HOME="${HOME}/.config/mango"
 export NOCTALIA_STATE_HOME="${HOME}/.local/state/mango"
 
