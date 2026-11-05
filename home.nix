@@ -71,6 +71,9 @@ in {
   };
 
   programs = {
+    # Desktop-notification update checks; bar wiring is left to each project.
+    freebuff-cli.enable = true;
+
     neovim = {
       enable = false; # Now managed by nixvim.nix
       defaultEditor = true;

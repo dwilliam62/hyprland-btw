@@ -14,10 +14,31 @@
     - Same flake discovery and same `nh`-or-`nixos-rebuild` fallback as `rebuild`/`update`, but they call `nh os boot` / `nixos-rebuild boot`, so the new generation is made the boot default instead of being activated in the running session
     - No `systemd-machined` pre-flight, unlike `rebuild`/`update`: `boot` activates nothing in the running session, so the socket activation conflict cannot happen
     - Written for changes that should land on the next reboot, e.g. a login manager or driver change
+  - `freebuff-cli` is now a portable Home Manager module, shared with the
+    NixOS-Hyprland and ddubsos flakes
+    - `programs.freebuff-cli.{enable,notifications.enable,checkForUpdates.enable,checkForUpdates.interval}`
+    - Update checks cache the npm `latest` answer for six hours and warn on
+      launch when the downloaded binary is behind; `FREEBUFF_CLI_CACHE_TTL`
+      overrides the TTL in seconds (`0` disables it)
+    - `--update` drops the npx cache entry and the downloaded binary, then
+      reruns the launcher so it re-downloads the current release
+    - `--check` prints both versions, `--status` prints one JSON line for a bar,
+      and `--notify` raises one desktop notification per published version
+    - `freebuff-cli-check` systemd user timer every four hours replaces
+      `freebuff-cache-warm`; it runs `--notify`, or `--check` when notifications
+      are disabled
 
 - Updated:
   - `README.md` repository layout tree lists the two new scripts
   - The Mango `HYPRBTW` copies in `config/mangowc/env.toml` and `config/mangowc/autostart.sh` were still on `0.5.7`
+  - `home.nix` enables `programs.freebuff-cli`, so update checks surface as desktop
+    notifications
+
+- Removed:
+  - The Noctalia `tordex/stdout` freebuff widget and its `[plugins]` entry
+    - `config/noctalia/noctalia-config.toml` is back to the stock bar
+    - Updates arrive as desktop notifications; `--status` is still available for
+      a Noctalia or Waybar module that wants to poll it
 
 #### Hyprland-btw v0.5.7
 
