@@ -58,7 +58,9 @@
     pipewire = {
       enable = true;
       pulse.enable = true;
-      jack.enable = true;
+      # JACK clients go through the per-process `pw-jack` wrapper below;
+      # services.pipewire.jack.enable sets LD_LIBRARY_PATH globally and is
+      # deprecated for that reason.
       extraConfig.pipewire."92-low-latency" = {
         "context.properties" = {
           "default.clock.rate" = 48000;
@@ -101,6 +103,10 @@
     #   };
     # };
   };
+
+  # PipeWire's JACK compatibility layer, applied per process so no global
+  # LD_LIBRARY_PATH is needed. Launch JACK applications as `pw-jack <app>`.
+  environment.systemPackages = [pkgs.pipewire.jack];
 
   programs = {
     dconf.enable = true;

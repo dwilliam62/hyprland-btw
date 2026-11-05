@@ -22,6 +22,10 @@
       overrides the TTL in seconds (`0` disables it)
     - `--update` drops the npx cache entry and the downloaded binary, then
       reruns the launcher so it re-downloads the current release
+    - `-h/--help` documents the wrapper's own flags instead of forwarding to
+      freebuff, and `--upgrade` is accepted as an alias for `--update`; the
+      update and `--version` paths drain the terminal's pending OSC 11 colour
+      reply so it cannot leak into the next prompt
     - `--check` prints both versions, `--status` prints one JSON line for a bar,
       and `--notify` raises one desktop notification per published version
     - `freebuff-cli-check` systemd user timer every four hours replaces

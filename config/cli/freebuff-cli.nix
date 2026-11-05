@@ -338,6 +338,55 @@
     NODE
                 }
 
+                # freebuff's native binary asks the terminal for its background
+                # colour (OSC 11). A short run can exit before reading the answer,
+                # leaving bytes like "11;rgb:..." for the caller's shell to print.
+                # Read and discard whatever reply is still queued, then restore
+                # the terminal settings exactly as they were.
+                drain_terminal_reply() {
+                  [ -t 0 ] || return 0
+                  local saved
+                  saved=$(stty -g 2>/dev/null) || return 0
+                  stty -icanon min 0 time 2 2>/dev/null || return 0
+                  dd bs=256 count=1 of=/dev/null 2>/dev/null || true
+                  stty "$saved" 2>/dev/null || true
+                }
+
+                # Answer the wrapper's own --help here instead of forwarding it:
+                # freebuff's help documents only freebuff's options, and launching it
+                # just to print usage makes it query the terminal's colour scheme.
+                case "$1" in
+                  -h | --help)
+                    cat <<'EOF'
+    Usage: freebuff-cli [wrapper option | freebuff arguments]
+
+    Run the freebuff coding agent through npx, with update checks.
+
+    Wrapper options:
+      -h, --help       Show this help and exit
+      -v, --version    Print the freebuff version, then exit
+      --check          Print the installed and npm latest versions, then exit
+      --status         Print one JSON line for a bar widget, then exit
+      --notify         Send one notification per newer npm release, then exit
+      --update         Drop the npx cache and downloaded binary, then reinstall
+                       the current release (--upgrade is accepted as an alias)
+
+    Any other argument is passed to freebuff, for example:
+      freebuff-cli --continue
+      freebuff-cli --cwd ~/project
+      freebuff-cli doctor
+
+    For freebuff's own options, run: npx --yes freebuff --help
+
+    Environment:
+      FREEBUFF_CLI_CACHE_TTL     Seconds to cache the npm latest lookup
+                                 (default 21600, 0 disables the cache)
+      FREEBUFF_CLI_NOTIFY_SEND   notify-send command used by --notify
+    EOF
+                    exit 0
+                    ;;
+                esac
+
                 # None of --check, --status or --notify needs nix-ld or npx: read
                 # the metadata and the cached registry answer, then exit.
                 case "$1" in
@@ -380,7 +429,7 @@
 
                 # Force both update layers immediately instead of waiting for npx's
                 # registry check and the launcher's deferred install.
-                if [ "$1" = "--update" ]; then
+                if [ "$1" = "--update" ] || [ "$1" = "--upgrade" ]; then
                   printf '%s\n' \
                     "freebuff-cli: refreshing the npx wrapper and the downloaded binary..." >&2
 
@@ -401,15 +450,29 @@
 
                   # Reinstalls the wrapper (resolving `latest` again) and lets the
                   # launcher download the matching binary; --version prints it and exits.
-                  exec npx --yes --prefer-online freebuff --version
+                  npx --yes --prefer-online freebuff --version
+                  status=$?
+
+                  drain_terminal_reply
+
+                  exit "$status"
                 fi
 
-                # --version/--help are answered by the installed binary and must stay
-                # quiet, so only a normal launch pays for the staleness check.
+                # --version prints and exits before the binary reads the terminal's
+                # OSC 11 reply, so it cannot be exec'd if the wrapper is to clean up
+                # after it. Capture the status, drain, then exit the same way.
                 case "$1" in
-                  -v | --version | -h | --help) ;;
-                  *) report_versions ;;
+                  -v | --version)
+                    npx --yes freebuff "$@"
+                    status=$?
+                    drain_terminal_reply
+                    exit "$status"
+                    ;;
                 esac
+
+                # Only a normal launch pays for the staleness check; --help,
+                # --version and the update path were already handled above.
+                report_versions
 
                 # `--yes` skips npx's interactive "Ok to proceed?" install prompt so the
                 # first run also works from scripts and non-interactive shells.
