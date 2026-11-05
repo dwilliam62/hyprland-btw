@@ -6,6 +6,19 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.8
+
+- Added:
+  - `rebuild-boot` and `update-boot` helper scripts
+    - `config/scripts/rebuild-boot.nix` and `config/scripts/update-boot.nix`, both registered in `home.nix`
+    - Same flake discovery and same `nh`-or-`nixos-rebuild` fallback as `rebuild`/`update`, but they call `nh os boot` / `nixos-rebuild boot`, so the new generation is made the boot default instead of being activated in the running session
+    - No `systemd-machined` pre-flight, unlike `rebuild`/`update`: `boot` activates nothing in the running session, so the socket activation conflict cannot happen
+    - Written for changes that should land on the next reboot, e.g. a login manager or driver change
+
+- Updated:
+  - `README.md` repository layout tree lists the two new scripts
+  - The Mango `HYPRBTW` copies in `config/mangowc/env.toml` and `config/mangowc/autostart.sh` were still on `0.5.7`
+
 #### Hyprland-btw v0.5.7
 
 - Updated:

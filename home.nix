@@ -16,6 +16,8 @@
   sessionLogout = import ./config/scripts/session-logout.nix {inherit pkgs;};
   rebuildScript = import ./config/scripts/rebuild.nix {inherit pkgs;};
   updateScript = import ./config/scripts/update.nix {inherit pkgs;};
+  rebuildBootScript = import ./config/scripts/rebuild-boot.nix {inherit pkgs;};
+  updateBootScript = import ./config/scripts/update-boot.nix {inherit pkgs;};
 in {
   imports = [
     ./config/terminals/alacritty.nix
@@ -63,6 +65,8 @@ in {
       sessionLogout
       rebuildScript
       updateScript
+      rebuildBootScript
+      updateBootScript
     ];
   };
 
