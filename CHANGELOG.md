@@ -6,6 +6,16 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.5.9
+
+- Added:
+  - overlay for nixpkgs cargo build change 
+    -waiting for upstream to catch up w/changes 
+ - switched to waybar from nixokgs vs. source 
+   - No long build time 
+   - Default is Noctalia shell 
+   - waybar 15.0 vs. 16.0 from source
+
 #### Hyprland-btw v0.5.8
 
 - Added:
