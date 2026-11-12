@@ -26,6 +26,18 @@
         text = builtins.readFile "${inputs.synfetch}/synfetch";
       };
       ghee = inputs.ghee.packages.${final.stdenv.hostPlatform.system}.ghee;
+
+      # nixpkgs 26.11 made rustPlatform.cargoSetupHook export
+      # AWS_LC_SYS_USE_SYSTEM, ZSTD_SYS_USE_PKG_CONFIG, OPENSSL_NO_VENDOR and
+      # similar variables for every Rust build (release note rl-2611), so crates
+      # are expected to link the Nixpkgs libraries. Packages that do not add
+      # pkg-config plus the matching library to their build inputs then panic in
+      # a build script. tectonic (installed by config/editors/bugsvim.nix) does,
+      # because its aws-lc-sys dependency cannot find a system AWS-LC:
+      #   AWS_LC_SYS_USE_SYSTEM=1 requires a system-installed AWS-LC, but none was found.
+      # Opt it out so the crate builds its bundled AWS-LC again. Harmless on
+      # older nixpkgs, which ignores the flag. Drop once nixpkgs fixes it.
+      tectonic-unwrapped = prev.tectonic-unwrapped.overrideAttrs {dontCargoUseSystemLibs = true;};
       butterview = inputs.butterview.packages.${final.stdenv.hostPlatform.system}.butterview;
 
       # Mango ships its Wayland session entry with a bare `Exec=mango`. greetd's

@@ -44,6 +44,30 @@
     - Updates arrive as desktop notifications; `--status` is still available for
       a Noctalia or Waybar module that wants to poll it
 
+- Fixed:
+  - `tectonic` cannot build on nixpkgs 26.11 and later, aborting `nh os switch`
+    - nixpkgs 26.11 made `rustPlatform.cargoSetupHook` export
+      `AWS_LC_SYS_USE_SYSTEM=1`, `ZSTD_SYS_USE_PKG_CONFIG=1`,
+      `OPENSSL_NO_VENDOR=1` and similar variables for every Rust build
+      (release note `rl-2611`, `pkgs/build-support/rust/hooks/cargo-setup-hook.sh`),
+      so crates are expected to link the Nixpkgs libraries instead of their
+      bundled copies
+      - A package that does not add `pkg-config` plus the matching library to
+        its build inputs then panics in a build script
+      - `tectonic` 0.17.0, installed by `config/editors/bugsvim.nix`, does:
+        `AWS_LC_SYS_USE_SYSTEM=1 requires a system-installed AWS-LC, but none was found.`
+        from `aws-lc-sys` 0.42.0
+      - The same class of failure hits other Rust packages on 26.11, e.g.
+        `below`, `proxmox-backup-client` and `syswatch` fail with
+        `Can't probe for zstd in pkg-config` from `zstd-sys` - none of those are
+        installed here, so `tectonic` is the only package this repo has to opt out
+    - `modules/overlays.nix` now sets `dontCargoUseSystemLibs = true` (the
+      documented opt-out) on `tectonic-unwrapped`, so the crate builds its
+      bundled AWS-LC again
+    - Harmless on the currently locked nixpkgs (`13e5376`, 26.11.20261104),
+      which has no `cargoUseSystemLibs` in its hook and ignores the flag
+    - Temporary workaround - drop once nixpkgs fixes the package
+
 #### Hyprland-btw v0.5.7
 
 - Updated:
