@@ -72,7 +72,6 @@
     isd # SystemD tool
     kitty
     kmon # Kernel Monitor
-    lstr # Tree like tool with icons, etc
     luarocks # LUA for nevoim
     mdcat
     mesa-demos # needed for inxi

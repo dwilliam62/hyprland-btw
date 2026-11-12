@@ -67,6 +67,14 @@
     - Harmless on the currently locked nixpkgs (`13e5376`, 26.11.20261104),
       which has no `cargoUseSystemLibs` in its hook and ignores the flag
     - Temporary workaround - drop once nixpkgs fixes the package
+  - `waybar` was compiled from source on every rebuild, where it failed
+    - The locked nixpkgs-unstable has `waybar` 0.16.0, which has no binary-cache
+      entry here, so `nh os switch` built it locally instead of substituting it
+    - `modules/overlays.nix` now takes the prebuilt `waybar` 0.15.0 from the
+      existing `nixpkgs-stable` input, so `config/packages.nix` keeps its plain
+      `waybar` entry and nothing is compiled locally
+    - Temporary pin - drop it once unstable's waybar is fixed, or once its
+      cache entry exists again
 
 #### Hyprland-btw v0.5.7
 

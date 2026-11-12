@@ -40,6 +40,14 @@
       tectonic-unwrapped = prev.tectonic-unwrapped.overrideAttrs {dontCargoUseSystemLibs = true;};
       butterview = inputs.butterview.packages.${final.stdenv.hostPlatform.system}.butterview;
 
+      # Waybar 0.16.0 from the locked nixpkgs-unstable has no binary-cache
+      # entry, so every rebuild compiles it from source instead of substituting
+      # it. Take the prebuilt 0.15.0 from the nixpkgs-stable input instead, so
+      # config/packages.nix keeps its plain `waybar` entry and nothing is
+      # compiled locally. Drop this override once unstable's waybar is cached
+      # again.
+      waybar = inputs.nixpkgs-stable.legacyPackages.${prev.stdenv.hostPlatform.system}.waybar;
+
       # Mango ships its Wayland session entry with a bare `Exec=mango`. greetd's
       # service PATH does not include the system profile, so noctalia-greeter
       # cannot resolve/inspect the executable and silently falls back to the
