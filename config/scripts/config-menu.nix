@@ -21,7 +21,7 @@ pkgs.writeShellScriptBin "config-menu" ''
 
   # Find repo directory
   repo=""
-  for candidate in "''$HOME/hyprland-btw" "''$HOME/Hyprland-btw"; do
+  for candidate in "''${PWD:-}" "''$HOME/hyprland-btw" "''$HOME/Hyprland-btw" "''$HOME/Projects/ddubs/hyprland-btw"; do
     if [ -d "''$candidate" ] && [ -f "''$candidate/flake.nix" ]; then
       repo="''$candidate"
       break

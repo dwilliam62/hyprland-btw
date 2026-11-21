@@ -61,14 +61,18 @@ pkgs.writeShellScriptBin "noctalia-msg" ''
     local display=""
 
     if [ "''${#candidate_displays[@]}" -eq 0 ]; then
+      # Capture the status in the else branch: after `fi`, `$?` is the status
+      # of the whole `if`, which is 0 when the condition failed, so assigning
+      # it there would turn every failure into a success.
       if output="$(run_noctalia_msg "" "''${args[@]}" 2>&1)"; then
         if [ -n "$output" ]; then
           printf '%s\n' "$output"
         fi
         return 0
+      else
+        status=$?
       fi
 
-      status=$?
       if [ -n "$output" ]; then
         printf '%s\n' "$output" >&2
       fi
@@ -81,8 +85,9 @@ pkgs.writeShellScriptBin "noctalia-msg" ''
           printf '%s\n' "$output"
         fi
         return 0
+      else
+        status=$?
       fi
-      status=$?
     done
 
     if [ -n "$output" ]; then

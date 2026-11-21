@@ -141,7 +141,7 @@ hyprland-btw/
      - `vm.guest-services.enable = true|false;` (QEMU/Spice guest agent)
 
 3. **Neovim & Package Overlays (`modules/overlays.nix`)**
-   - Neovim is pinned to `nixpkgs-stable` (`nixos-25.05` channel) to prevent breaking changes from `nixpkgs-unstable`.
+   - Neovim is pinned to `nixpkgs-stable` (`nixos-26.05` channel) to prevent breaking changes from `nixpkgs-unstable`.
    - Active Neovim configuration is driven by `config/editors/bugsvim.nix` (with `nixvim.nix` and `nvf.nix` available as alternative configurations in `config/editors/`).
    - Contains a C++ compiler flag overlay hotfix for `dwarfs` (gearlever dependency).
 

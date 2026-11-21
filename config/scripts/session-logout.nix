@@ -41,7 +41,10 @@ pkgs.writeShellScriptBin "session-logout" ''
     done
   fi
 
-  # 4. Fallback process termination
+  # 4. Fallback process termination. `pkill -x` matches the whole process name,
+  # so an alternation such as "Hyprland|mango" never matches; use one call per
+  # compositor.
   sleep 0.5
-  ${pkgs.procps}/bin/pkill -u "''${USER:-$(${pkgs.coreutils}/bin/id -un)}" -x "Hyprland|mango" 2>/dev/null || true
+  ${pkgs.procps}/bin/pkill -u "''${USER:-$(${pkgs.coreutils}/bin/id -un)}" -x Hyprland 2>/dev/null || true
+  ${pkgs.procps}/bin/pkill -u "''${USER:-$(${pkgs.coreutils}/bin/id -un)}" -x mango 2>/dev/null || true
 ''

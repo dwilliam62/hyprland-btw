@@ -6,6 +6,48 @@
 
 ## Inspired by: Tony,btw YouTube Video. (See README.md)
 
+#### Hyprland-btw v0.6.0
+
+- Added:
+  - `mango-toml-rehearsal` flake check (`checks.x86_64-linux`)
+    - Runs `tests/mango-toml-rehearsal.sh` from `nix flake check`
+    - Provides bash, coreutils, diffutils, findutils, gawk, grep, sed and
+      python3 to the sandbox so the rehearsal can parse the TOMLs, render the
+      config with `mango -p` and exercise the merge behaviour
+
+- Updated:
+  - `HYPRBTW` is `0.6.0` in `config/hypr/lua/env.lua`, `config/mangowc/env.toml`
+    and `config/mangowc/autostart.sh`
+  - `config/scripts/config-menu.nix` also probes `$PWD`, so it finds the
+    checkout when the session was started outside `~/hyprland-btw`
+  - `.gitignore` covers `install_*.log`, `result`/`result-*` and
+    `hosts/*/hardware.nix.backup.*`
+  - `AGENTS.md` points the pinned Neovim input at `nixos-26.05`
+  - Stale comments in `home.nix` (the active editor is bugsvim, not nixvim)
+    and `configuration.nix` (zram percentage, duplicate `allowUnfree` note)
+
+- Fixed:
+  - SUPER+SHIFT+comma called `nocalia-msg`, which does not exist; the bind now
+    calls `noctalia-msg settings-toggle`
+  - SUPER+S ran `snip`, which is not installed; it now runs
+    `hyprshot -m output -o ~/Pictures/Screenshots`
+  - `config/scripts/noctalia-msg.nix` captured `$?` after `fi`, where it is
+    always 0, so a failed `noctalia msg` was reported as success and the
+    remaining displays were never tried; each failure is now recorded in its
+    `else` branch
+  - `config/scripts/session-logout.nix` used
+    `pkill -x "Hyprland|mango"`; `pkill -x` has no alternation, so the fallback
+    killed nothing - it now runs one `pkill -x` per compositor
+  - `install.sh` could not match `hostName = lib.mkDefault "..."`, so the
+    generated host name was never written; the pattern now allows the
+    `lib.mkDefault` wrapper and the replacement keeps group 1, so the
+    `networking.hostName = ` prefix survives
+  - `config/cli/btop.nix` pointed the theme at `/usr/share/btop/themes`, which
+    does not exist on NixOS; it now uses `${pkgs.btop}/share/btop/themes`
+  - `config/terminals/wezterm.nix` assigned `config.font`/`config.font_size`
+    twice, discarding the Maple Mono fallback list; the duplicate and the
+    unused `is_nvidia_gpu()` helper are gone
+
 #### Hyprland-btw v0.5.9
 
 - Added:

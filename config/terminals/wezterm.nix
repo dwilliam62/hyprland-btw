@@ -57,8 +57,6 @@
       -- config.color_scheme = 'Advark Blue'
       config.color_scheme = 'Catppuccin Mocha'
       -- config.color_scheme = 'Dracula'
-     config.font_size = 12
-     config.font = wezterm.font("FiraCode", { weight = "Regular", italic = false })
 
      config.window_padding = {
        left = 10,
@@ -104,14 +102,6 @@
 
        -- Disable missing glyph warnings, since we have fallback fonts now
        config.warn_about_missing_glyphs = false
-
-        -- function for nvidia_gpu
-      local function is_nvidia_gpu()
-      local handle = io.popen("lspci | grep -i nvidia")
-      local result = handle:read("*a")
-      handle:close()
-      return result ~= ""
-      end
 
      -- NVIDIA optimization settings
      -- config.enable_wayland = not is_nvidia_gpu() -- Disable Wayland if NVIDIA GPU is detected

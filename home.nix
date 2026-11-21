@@ -75,7 +75,7 @@ in {
     freebuff-cli.enable = true;
 
     neovim = {
-      enable = false; # Now managed by nixvim.nix
+      enable = false; # HM's Neovim stays off; the config comes from bugsvim.nix
       defaultEditor = true;
     };
     bash = {

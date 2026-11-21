@@ -6,7 +6,8 @@
       cudaSupport = true;
     };
     settings = {
-      color_theme = "/usr/share/btop/themes/HotPurpleTrafficLight.theme";
+      # NixOS has no /usr/share; the themes ship inside the btop package.
+      color_theme = "${pkgs.btop}/share/btop/themes/HotPurpleTrafficLight.theme";
       theme_background = false;
       truecolor = true;
       vim_keys = true;

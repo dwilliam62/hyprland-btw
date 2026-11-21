@@ -107,6 +107,32 @@
             };
       };
 
+    # Checks run by `nix flake check`. The Mango rehearsal exercises the TOML
+    # configs and the deployment/reload logic from config/mangowc.nix without
+    # needing a rebuild; it skips the `mango -p` parse when mango is absent.
+    checks.x86_64-linux = let
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    in {
+      mango-toml-rehearsal =
+        pkgs.runCommand "mango-toml-rehearsal" {
+          nativeBuildInputs = with pkgs; [
+            bash
+            coreutils
+            diffutils
+            findutils
+            gawk
+            gnugrep
+            gnused
+            python3
+          ];
+        } ''
+          cp -r ${./.} source
+          cd source
+          bash tests/mango-toml-rehearsal.sh
+          touch $out
+        '';
+    };
+
     # Code formatter
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
   };

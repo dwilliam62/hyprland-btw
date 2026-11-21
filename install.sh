@@ -466,8 +466,10 @@ fi
 # The primary username is written to ./user.nix below and consumed by
 # flake.nix, so configuration.nix no longer hardcodes a user entry.
 sed -i -E 's|(^\s*time\.timeZone\s*=\s*\").*(\";)|\1'"$timeZone"'\2|' ./configuration.nix
-# configuration.nix defines hostName inside the networking attrset (not networking.hostName = ...)
-sed -i -E 's|(^\s*hostName\s*=\s*\").*(\";)|\1'"$hostName"'\2|' ./configuration.nix
+# configuration.nix defines hostName inside the networking attrset (not
+# networking.hostName = ...) and wraps the value in lib.mkDefault, so the
+# pattern must allow that prefix and the replacement must re-add it.
+sed -i -E 's|(^\s*hostName\s*=\s*(lib\.mkDefault\s*)?")[^"]*(".*)$|\1'"$hostName"'\3|' ./configuration.nix
 
 # Create host directory under hosts/
 TARGET_HOST_DIR="./hosts/$hostName"

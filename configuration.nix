@@ -22,7 +22,7 @@
 
   zramSwap = {
     enable = true;
-    memoryPercent = 40; # use ~50% of RAM for compressed swap (tweak as you like)
+    memoryPercent = 40; # use ~40% of RAM for compressed swap (tweak as you like)
     priority = 100; # higher than any disk-based swap
   };
 
@@ -229,7 +229,6 @@
     };
   };
 
-  #nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
   security.sudo.wheelNeedsPassword = true;
 

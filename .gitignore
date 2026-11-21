@@ -1,1 +1,11 @@
 .cloud-attachments
+
+# install.sh log, written into the repo root
+install_*.log
+
+# `nix build .#nixosConfigurations.<host>.config.system.build.toplevel`
+result
+result-*
+
+# install.sh backups of an existing hardware.nix
+hosts/*/hardware.nix.backup.*
