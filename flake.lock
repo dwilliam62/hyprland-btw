@@ -9,11 +9,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795233589,
-        "narHash": "sha256-JTeJI5aDGWruvadJ99zyw2YncZymtwNhpjtAxJfr/L4=",
+        "lastModified": 1795587918,
+        "narHash": "sha256-JKO72eFr/br/8LqkH+qI7biZJCT79rnIOsjFJFLID3g=",
         "owner": "kamadorueda",
         "repo": "alejandra",
-        "rev": "cfbad8a7664010851841f70da2cdf70798f1cb37",
+        "rev": "d6457f52f7335446e8188852070ceb0bbdf8bc13",
         "type": "github"
       },
       "original": {
@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795205588,
-        "narHash": "sha256-SqDm2dcZm8TpFHjXfcYOLc25+wgCBkIQzule0ZfHSuw=",
+        "lastModified": 1795484498,
+        "narHash": "sha256-JR2wuVEZ7uPmmN9E10BsVbGAMsubTzp2ySnginj6joY=",
         "ref": "refs/heads/main",
-        "rev": "6a2d531dd5ea12c18cca5620f1f6bdec19eba3b8",
-        "revCount": 61,
+        "rev": "446ceda22b141e530aac3ef49a9dea9888bbcf7b",
+        "revCount": 69,
         "type": "git",
         "url": "https://justaguy.dev/drew/butterview"
       },
@@ -125,11 +125,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795268568,
-        "narHash": "sha256-1RJm4DEu7YHJv94sjSY7sjqT+kHx/AUwmtUN4dtFBUo=",
+        "lastModified": 1795748630,
+        "narHash": "sha256-J1iQ1QMnkFwZFXnlPt2t3Qx7TsGjw08/0L3QMqNt+Wg=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "6857c7f7c338ad181729c52071386b0d3afa24bc",
+        "rev": "54f903fdaaf5d5720ed36706fe75332af69eb793",
         "type": "github"
       },
       "original": {
@@ -141,11 +141,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1795217999,
-        "narHash": "sha256-Z5mAFcY8XTAaWe+RwTchz4Fx1gwaeQ2WD8A8bKX7njY=",
+        "lastModified": 1795371335,
+        "narHash": "sha256-oa2P5WZer1A4wuhatl92JyHHEjrrOdIyuvTuI5LUi9Q=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "680275f0bb6afce84fbac3e75fc47c5f2272400b",
+        "rev": "619c39f6eac5d1ed6b8f073a9414baf7034b2356",
         "type": "github"
       },
       "original": {
@@ -172,11 +172,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1795137884,
-        "narHash": "sha256-iKXCN36qYfBni+3nH4vAd98/kshoIsPB2S9mYWhma30=",
+        "lastModified": 1795370043,
+        "narHash": "sha256-s/0jq8usZtLVOolYBwmyUmd3JsfAu7w3FU+a0dgMqSY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ab5c18fdedfc8f9bbc9d773f10a540790e2787a7",
+        "rev": "0dc498bfe49baeb18b0f9891e800b53bb2603193",
         "type": "github"
       },
       "original": {
